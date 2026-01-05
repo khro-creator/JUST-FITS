@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Tetris Script Tester</title>
+    <style>
+        body { 
+            font-family: 'Courier New', monospace;
+            background: #111;
+            color: #0f0;
+            padding: 20px;
+        }
+        h1 { color: #0ff; }
+        .board { 
+            display: inline-grid;
+            grid-template-columns: repeat(10, 30px);
+            grid-template-rows: repeat(20, 30px);
+            border: 3px solid #0ff;
+            margin: 20px;
+            background: #000;
+        }
+        .cell {
+            width: 30px;
+            height: 30px;
+            border: 1px solid #333;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        .I { background: #00f0f0; color: #000; }
+        .J { background: #0000f0; color: #fff; }
+        .L { background: #f0a000; color: #000; }
+        .O { background: #f0f000; color: #000; }
+        .S { background: #00f000; color: #000; }
+        .T { background: #a000f0; color: #fff; }
+        .Z { background: #f00000; color: #fff; }
+        .controls { margin: 20px; }
+        button { 
+            background: #0f0;
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        button:hover { background: #0ff; }
+        .info {
+            background: #222;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #0f0;
+        }
+        .log {
+            background: #000;
+            border: 2px solid #333;
+            padding: 10px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 Tetris Script Tester</h1>
+    
+    <div class="controls">
+        <button onclick="step()">⏭️ Next Piece</button>
+        <button onclick="autoPlay()">▶️ Auto Play</button>
+        <button onclick="reset()">🔄 Reset</button>
+    </div>
+    
+    <div class="info">
+        <div><strong>Piece:</strong> <span id="pieceNum">0</span> / 10</div>
+        <div><strong>Current:</strong> <span id="currentPiece">-</span></div>
+        <div><strong>Lines Cleared:</strong> <span id="linesCleared">0</span></div>
+        <div><strong>Blocks on Board:</strong> <span id="blocksOnBoard">0</span></div>
+    </div>
+    
+    <div id="boardContainer" class="board"></div>
+    
+    <div class="log" id="log"></div>
+
+    <script>
+        const COLS = 10;
+        const ROWS = 20;
+        
+        const SHAPES = {
+            I: [
+                [[0,0,0,0], [1,1,1,1], [0,0,0,0], [0,0,0,0]],
+                [[0,0,1,0], [0,0,1,0], [0,0,1,0], [0,0,1,0]]
+            ],
+            O: [
+                [[0,1,1,0], [0,1,1,0], [0,0,0,0], [0,0,0,0]]
+            ],
+            T: [
+                [[0,1,0,0], [1,1,1,0], [0,0,0,0], [0,0,0,0]],
+                [[0,1,0,0], [0,1,1,0], [0,1,0,0], [0,0,0,0]],
+                [[0,0,0,0], [1,1,1,0], [0,1,0,0], [0,0,0,0]],
+                [[0,1,0,0], [1,1,0,0], [0,1,0,0], [0,0,0,0]]
+            ],
+            L: [
+                [[0,0,1,0], [1,1,1,0], [0,0,0,0], [0,0,0,0]],
+                [[0,1,0,0], [0,1,0,0], [0,1,1,0], [0,0,0,0]],
+                [[0,0,0,0], [1,1,1,0], [1,0,0,0], [0,0,0,0]],
+                [[1,1,0,0], [0,1,0,0], [0,1,0,0], [0,0,0,0]]
+            ],
+            J: [
+                [[1,0,0,0], [1,1,1,0], [0,0,0,0], [0,0,0,0]],
+                [[0,1,1,0], [0,1,0,0], [0,1,0,0], [0,0,0,0]],
+                [[0,0,0,0], [1,1,1,0], [0,0,1,0], [0,0,0,0]],
+                [[0,1,0,0], [0,1,0,0], [1,1,0,0], [0,0,0,0]]
+            ],
+            S: [
+                [[0,1,1,0], [1,1,0,0], [0,0,0,0], [0,0,0,0]],
+                [[0,1,0,0], [0,1,1,0], [0,0,1,0], [0,0,0,0]]
+            ],
+            Z: [
+                [[1,1,0,0], [0,1,1,0], [0,0,0,0], [0,0,0,0]],
+                [[0,0,1,0], [0,1,1,0], [0,1,0,0], [0,0,0,0]]
+            ]
+        };
+        
+        const SCRIPT = [
+            { type: "I", rotation: 0, x: 4, label: "Be Curious", section: 0 },
+            { type: "L", rotation: 2, x: 3, label: "Have Fun", section: 0 },
+            { type: "J", rotation: 2, x: 6, label: "Empower Others", section: 0 },
+            { type: "O", rotation: 0, x: 0, label: "Make Ideas Real", section: 0 },
+            { type: "T", rotation: 0, x: 4, label: "Commit to Excellence", section: 0 },
+            { type: "S", rotation: 0, x: 2, label: "Seek Simplicity", section: 0 },
+            { type: "Z", rotation: 0, x: 6, label: "Be Accountable", section: 0 },
+            { type: "I", rotation: 1, x: 7, label: "Lead by Example", section: 0 },
+            { type: "S", rotation: 0, x: 0, label: "Fail to Succeed", section: 0 },
+            { type: "J", rotation: 2, x: 6, label: "Thrive in Ambiguity", section: 0 },
+            { type: "L", rotation: 2, x: 0, label: "Curious", section: 1 },
+            { type: "T", rotation: 2, x: 4, label: "Playful", section: 1 },
+            { type: "O", rotation: 0, x: 6, label: "Freaky", section: 1 },
+            { type: "Z", rotation: 0, x: 1, label: "Funny", section: 1 },
+            { type: "I", rotation: 0, x: 3, label: "Fast-minded", section: 1 },
+            { type: "J", rotation: 2, x: 7, label: "Adventurous", section: 1 },
+            { type: "L", rotation: 2, x: 0, label: "Empathetic", section: 1 },
+            { type: "I", rotation: 0, x: 3, label: "Good-Hearted", section: 1 },
+            { type: "T", rotation: 2, x: 0, label: "Passionate", section: 1 },
+            { type: "O", rotation: 0, x: 4, label: "Creative", section: 2 },
+            { type: "Z", rotation: 0, x: 2, label: "Visionary", section: 2 },
+            { type: "T", rotation: 0, x: 7, label: "Thinker", section: 2 },
+            { type: "S", rotation: 0, x: 0, label: "Innovator", section: 2 },
+            { type: "L", rotation: 2, x: 4, label: "Techie", section: 2 },
+            { type: "J", rotation: 2, x: 7, label: "Investigator", section: 2 },
+            { type: "O", rotation: 0, x: 4, label: "Hacker", section: 2 },
+            { type: "S", rotation: 0, x: 2, label: "Lifelong-Learner", section: 2 },
+            { type: "Z", rotation: 0, x: 7, label: "Builder", section: 2 },
+            { type: "T", rotation: 2, x: 0, label: "Discipline", section: 3 },
+            { type: "J", rotation: 2, x: 7, label: "Determined", section: 3 },
+            { type: "L", rotation: 2, x: 4, label: "Consistent", section: 3 },
+            { type: "I", rotation: 0, x: 0, label: "Hyperfocus", section: 3 },
+            { type: "I", rotation: 0, x: 4, label: "Human-centered", section: 3 },
+            { type: "L", rotation: 2, x: 0, label: "Challenge-Driven", section: 3 },
+            { type: "O", rotation: 0, x: 7, label: "Adaptability", section: 3 },
+            { type: "Z", rotation: 1, x: 2, label: "Problem-Solving", section: 3 },
+            { type: "S", rotation: 1, x: 5, label: "Reliable", section: 3 },
+            { type: "T", rotation: 2, x: 1, label: "THINKER", section: 4 },
+            { type: "J", rotation: 1, x: 4, label: "MAKER", section: 4 },
+            { type: "O", rotation: 0, x: 6, label: "HACKER", section: 4 }
+        ];
+        
+        let board = [];
+        let scriptIndex = 0;
+        let totalLinesCleared = 0;
+        
+        function init() {
+            board = Array(ROWS).fill(null).map(() => Array(COLS).fill(null));
+            scriptIndex = 0;
+            totalLinesCleared = 0;
+            log("🎮 Tester initialized");
+            render();
+        }
+        
+        function render() {
+            const container = document.getElementById('boardContainer');
+            container.innerHTML = '';
+            
+            for (let row = 0; row < ROWS; row++) {
+                for (let col = 0; col < COLS; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    
+                    if (board[row][col]) {
+                        cell.className += ' ' + board[row][col];
+                        cell.textContent = (row * COLS + col + 1).toString().padStart(2, '0');
+                    }
+                    
+                    container.appendChild(cell);
+                }
+            }
+            
+            document.getElementById('pieceNum').textContent = scriptIndex;
+            document.getElementById('linesCleared').textContent = totalLinesCleared;
+            
+            const blocksOnBoard = board.flat().filter(cell => cell !== null).length;
+            document.getElementById('blocksOnBoard').textContent = blocksOnBoard;
+        }
+        
+        function step() {
+            if (scriptIndex >= SCRIPT.length) {
+                log("✅ All pieces placed!");
+                return;
+            }
+            
+            const piece = SCRIPT[scriptIndex];
+            const shape = SHAPES[piece.type][piece.rotation];
+            
+            log(`\n📦 Placing piece ${scriptIndex + 1}: ${piece.type} (r${piece.rotation}) at x=${piece.x}`);
+            log(`   Label: "${piece.label}"`);
+            
+            document.getElementById('currentPiece').textContent = `${piece.type} (r${piece.rotation}) at x=${piece.x}`;
+            
+            // Find drop position
+            let y = 0;
+            while (canPlace(shape, piece.x, y + 1)) {
+                y++;
+            }
+            
+            log(`   → Lands at y=${y}`);
+            
+            // Place piece
+            let blocksPlaced = 0;
+            for (let row = 0; row < shape.length; row++) {
+                for (let col = 0; col < shape[row].length; col++) {
+                    if (shape[row][col]) {
+                        const boardY = y + row;
+                        const boardX = piece.x + col;
+                        if (boardY >= 0 && boardY < ROWS && boardX >= 0 && boardX < COLS) {
+                            board[boardY][boardX] = piece.type;
+                            blocksPlaced++;
+                        }
+                    }
+                }
+            }
+            
+            log(`   ✓ Placed ${blocksPlaced} blocks`);
+            
+            // Check for line clears
+            const clearedLines = checkAndClearLines();
+            if (clearedLines > 0) {
+                log(`   🎉 CLEARED ${clearedLines} LINE(S)!`);
+                totalLinesCleared += clearedLines;
+            }
+            
+            scriptIndex++;
+            render();
+        }
+        
+        function canPlace(shape, x, y) {
+            for (let row = 0; row < shape.length; row++) {
+                for (let col = 0; col < shape[row].length; col++) {
+                    if (shape[row][col]) {
+                        const boardY = y + row;
+                        const boardX = x + col;
+                        
+                        if (boardX < 0 || boardX >= COLS || boardY >= ROWS) return false;
+                        if (boardY >= 0 && board[boardY][boardX] !== null) return false;
+                    }
+                }
+            }
+            return true;
+        }
+        
+        function checkAndClearLines() {
+            let cleared = 0;
+            for (let y = ROWS - 1; y >= 0; y--) {
+                if (board[y].every(cell => cell !== null)) {
+                    log(`   → Row ${y} is FULL! Clearing...`);
+                    board.splice(y, 1);
+                    board.unshift(Array(COLS).fill(null));
+                    cleared++;
+                    y++; // Check same index again after shift
+                }
+            }
+            return cleared;
+        }
+        
+        function autoPlay() {
+            const interval = setInterval(() => {
+                step();
+                if (scriptIndex >= SCRIPT.length) {
+                    clearInterval(interval);
+                    
+                    const blocksRemaining = board.flat().filter(cell => cell !== null).length;
+                    log(`\n${"=".repeat(50)}`);
+                    log(`FINAL RESULT:`);
+                    log(`  Total lines cleared: ${totalLinesCleared}`);
+                    log(`  Blocks remaining: ${blocksRemaining}`);
+                    log(`  Status: ${blocksRemaining === 0 ? "✅ PERFECT CLEAR!" : "❌ Not perfect clear"}`);
+                    log("=".repeat(50));
+                }
+            }, 800);
+        }
+        
+        function reset() {
+            init();
+        }
+        
+        function log(message) {
+            const logEl = document.getElementById('log');
+            logEl.textContent += message + '\n';
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+        
+        init();
+    </script>
+</body>
+</html>
