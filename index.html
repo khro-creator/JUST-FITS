@@ -598,7 +598,7 @@ For development history, see agent.md
       if (isMobile) {
         // Scale to fit mobile viewport while maintaining aspect ratio
         // Add significant padding to prevent cutoff and account for browser UI
-        const padding = 60; // 30px padding on each side for safety
+        const padding = 80; // 40px padding on each side for full visibility
         const viewportWidth = window.innerWidth - padding;
         const viewportHeight = window.innerHeight - padding;
         const aspectRatio = baseWidth / baseHeight;
@@ -789,6 +789,15 @@ For development history, see agent.md
     
     function gameLoop(time = 0) {
       const deltaTime = time - lastTime;
+      
+      // Handle large time jumps (e.g., after retry, tab switching, or first frame)
+      if (deltaTime > 1000 || lastTime === 0) {
+        lastTime = time;
+        render();
+        requestAnimationFrame(gameLoop);
+        return;
+      }
+      
       lastTime = time;
       
       if (gameState === "playing") {
@@ -1129,8 +1138,11 @@ For development history, see agent.md
       const boardWidth = CONFIG.COLS * CONFIG.CELL_SIZE;
       const hudX = boardWidth + 10; // Start 10px after board
       const hudWidth = CONFIG.HUD_WIDTH - 20; // Total HUD width with padding
-      const hudCenterX = boardWidth + (CONFIG.HUD_WIDTH / 2); // True center of HUD area
+      const hudCenterX = Math.round(boardWidth + (CONFIG.HUD_WIDTH / 2)); // Round to integer for crisp rendering
       let y = 40;  // Increased from 20 to 40 for more top padding
+      
+      // Enable better text rendering
+      ctx.imageSmoothingEnabled = true;
       
       // Title Section - centered
       ctx.fillStyle = "#80ecba";
@@ -1441,8 +1453,9 @@ For development history, see agent.md
       
       document.getElementById("overlay").classList.remove("active");
       resetGame(); // This already sets gameState = "playing"
-      lastTime = performance.now(); // Reset time to current time
+      lastTime = 0; // Signal to gameLoop to reset timing on next frame
       dropCounter = 0; // Reset drop counter
+      messageTimer = 0; // Reset message timer
       lastTime = 0; // Reset time so deltaTime calculation works correctly
       dropCounter = 0; // Reset drop counter to start immediately
       
