@@ -596,8 +596,8 @@ For development history, see agent.md
       
       if (isMobile) {
         // Scale to fit mobile viewport while maintaining aspect ratio
-        // Add padding to prevent cutoff and account for browser UI
-        const padding = 20; // 10px padding on each side
+        // Add significant padding to prevent cutoff and account for browser UI
+        const padding = 40; // 20px padding on each side for safety
         const viewportWidth = window.innerWidth - padding;
         const viewportHeight = window.innerHeight - padding;
         const aspectRatio = baseWidth / baseHeight;
@@ -607,10 +607,10 @@ For development history, see agent.md
         const scaleToFitHeight = viewportHeight / baseHeight;
         const scaleFactor = Math.min(scaleToFitWidth, scaleToFitHeight, 1); // Don't scale up, only down
         
-        width = baseWidth * scaleFactor;
-        height = baseHeight * scaleFactor;
+        width = Math.floor(baseWidth * scaleFactor);
+        height = Math.floor(baseHeight * scaleFactor);
         
-        console.log(`Mobile: viewport ${window.innerWidth}x${window.innerHeight}, canvas ${width}x${height}`);
+        console.log(`Mobile: viewport ${window.innerWidth}x${window.innerHeight}, base ${baseWidth}x${baseHeight}, scale ${scaleFactor.toFixed(3)}, canvas ${width}x${height}`);
       }
       
       canvas.width = baseWidth * scale;
