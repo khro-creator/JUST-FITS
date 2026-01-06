@@ -42,6 +42,7 @@ SECTIONS:
 - Section 2 (Pieces 20-28): I build things (My Skills)
 - Section 3 (Pieces 29-37): My Work Ethic
 - Section 4 (Pieces 38-41): THINKER, MAKER, HACKER, LEARNER finale
+  (Note: Methodical and Simplicity are in Section 2, not finale)
 
 BRANDING:
 - Colors: Propelland blue (#0f47f5) and teal (#80ecba)
@@ -972,7 +973,7 @@ For development history, see agent.md
     function drawHUD() {
       const hudX = CONFIG.COLS * CONFIG.CELL_SIZE + 20;
       const hudWidth = CONFIG.HUD_WIDTH - 30;
-      let y = 20;
+      let y = 40;  // Increased from 20 to 40 for more top padding
       
       // Title Section - centered
       ctx.fillStyle = "#80ecba";
@@ -1074,8 +1075,7 @@ For development history, see agent.md
       const centerX = (CONFIG.COLS * CONFIG.CELL_SIZE) / 2;
       const centerY = (CONFIG.ROWS * CONFIG.CELL_SIZE) / 2;
       
-      ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
-      ctx.fillRect(0, centerY - 50, CONFIG.COLS * CONFIG.CELL_SIZE, 100);
+      // Removed background box - transparent background to show falling pieces
       
       ctx.fillStyle = "#FFD700";
       ctx.font = "bold 28px sans-serif";
@@ -1098,6 +1098,7 @@ For development history, see agent.md
           <h2>Score Board</h2>
           <p><strong>Lines: ${linesCleared} | Score: ${score} | Level: ${level}</strong></p>
           <p><strong>${CONFIG.NAME}</strong></p>
+          <p><a href="mailto:roci42madrid@gmail.com" style="color: #80ecba; text-decoration: none;">roci42madrid@gmail.com</a></p>
           <p>${CONFIG.RESULT}</p>
           <div class="buttons">
             <button class="primary" onclick="retry()">RETRY</button>
