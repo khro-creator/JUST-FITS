@@ -1435,13 +1435,18 @@ For development history, see agent.md
       
       document.getElementById("overlay").classList.remove("active");
       resetGame();
-      gameState = "playing";
+      gameState = "playing"; // Ensure game is in playing state
       
-      // Start fresh music
+      // Start fresh music - ensure AudioContext is running first
       if (musicStarted && audioContext) {
+        console.log('Retry: restarting music, AudioContext state:', audioContext.state);
         if (audioContext.state === 'suspended') {
-          audioContext.resume().then(() => startMusic());
+          audioContext.resume().then(() => {
+            console.log('AudioContext resumed, starting music');
+            startMusic();
+          });
         } else {
+          console.log('AudioContext already running, starting music');
           startMusic();
         }
       }
