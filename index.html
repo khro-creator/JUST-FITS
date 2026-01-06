@@ -592,7 +592,10 @@ For development history, see agent.md
       resetBoard();
       
       document.addEventListener("keydown", handleKeyPress);
-      document.getElementById("overlay").addEventListener("click", handleOverlayClick);
+      
+      const overlay = document.getElementById("overlay");
+      overlay.addEventListener("click", handleOverlayClick);
+      overlay.addEventListener("touchstart", handleOverlayClick, { passive: false });
       
       // Mobile touch handling - tap on canvas to pause/resume
       if (window.innerWidth <= 768) {
@@ -1255,7 +1258,19 @@ For development history, see agent.md
     }
     
     function handleOverlayClick(e) {
-      if (gameState === "title" && e.target.id === "overlay") {
+      // Check if overlay is active (showing title screen or scoreboard)
+      const overlay = document.getElementById("overlay");
+      if (!overlay.classList.contains('active')) {
+        return;
+      }
+      
+      // Prevent default on touch to avoid double-firing
+      if (e.type === 'touchstart') {
+        e.preventDefault();
+      }
+      
+      if (gameState === "title") {
+        console.log("Starting game from overlay tap/click");
         startGame();
       }
     }
