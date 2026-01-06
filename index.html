@@ -576,6 +576,7 @@ For development history, see agent.md
     let rotationInterval = 800; // Rotate every 800ms
     let principleMessageIndex = 0;
     let showingPrincipleMessages = false;
+    let wakeLock = null;
     
     // ============================================================================
     // INITIALIZATION
@@ -597,7 +598,7 @@ For development history, see agent.md
       if (isMobile) {
         // Scale to fit mobile viewport while maintaining aspect ratio
         // Add significant padding to prevent cutoff and account for browser UI
-        const padding = 40; // 20px padding on each side for safety
+        const padding = 60; // 30px padding on each side for safety
         const viewportWidth = window.innerWidth - padding;
         const viewportHeight = window.innerHeight - padding;
         const aspectRatio = baseWidth / baseHeight;
@@ -1379,6 +1380,9 @@ For development history, see agent.md
       document.getElementById("overlay").classList.remove("active");
       resetGame();
       
+      // Request wake lock to prevent screen from sleeping
+      requestWakeLock();
+      
       if (!musicStarted) {
         if (audioContext) {
           // AudioContext already created in user gesture, just start music
@@ -1434,8 +1438,10 @@ For development history, see agent.md
       }
       
       document.getElementById("overlay").classList.remove("active");
-      resetGame();
-      gameState = "playing"; // Ensure game is in playing state
+      resetGame(); // This already sets gameState = "playing"
+      
+      // Request wake lock to prevent screen from sleeping
+      requestWakeLock();
       
       // Start fresh music - ensure AudioContext is running first
       if (musicStarted && audioContext) {
@@ -1450,9 +1456,48 @@ For development history, see agent.md
           startMusic();
         }
       }
+      
+      console.log('Retry complete, gameState:', gameState);
     }
     
     window.retry = retry;
+    
+    // ============================================================================
+    // WAKE LOCK - PREVENT SCREEN FROM SLEEPING
+    // ============================================================================
+    
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+          console.log('Wake Lock acquired - screen will stay on');
+          
+          wakeLock.addEventListener('release', () => {
+            console.log('Wake Lock released');
+          });
+        } else {
+          console.log('Wake Lock API not supported');
+        }
+      } catch (err) {
+        console.warn('Wake Lock request failed:', err);
+      }
+    }
+    
+    function releaseWakeLock() {
+      if (wakeLock) {
+        wakeLock.release();
+        wakeLock = null;
+      }
+    }
+    
+    // Release wake lock when page is hidden
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden' && wakeLock) {
+        releaseWakeLock();
+      } else if (document.visibilityState === 'visible' && gameState === 'playing') {
+        requestWakeLock();
+      }
+    });
     
     // ============================================================================
     // AUDIO - COMPLETE KOROBEINIKI MELODY
