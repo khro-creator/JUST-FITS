@@ -239,7 +239,43 @@ For development history, see agent.md
       border-color: #80ecba;
     }
     
+    /* Mobile Controls */
+    #mobile-controls {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: none;
+      gap: 15px;
+      z-index: 1000;
+    }
+    
+    #mobile-controls button {
+      font-size: 14px;
+      padding: 15px 25px;
+      border-radius: 10px;
+      background: rgba(15, 71, 245, 0.9);
+      border: 2px solid #80ecba;
+      color: #fff;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    
+    #mobile-controls button:active {
+      transform: scale(0.95);
+      background: rgba(128, 236, 186, 0.9);
+      color: #000;
+    }
+    
     @media (max-width: 768px) {
+      body {
+        overflow: auto;
+      }
+      
       .big-title {
         font-size: 48px;
       }
@@ -248,6 +284,42 @@ For development history, see agent.md
       }
       .blink {
         font-size: 18px;
+      }
+      
+      canvas {
+        max-width: 100%;
+        height: auto;
+      }
+      
+      #mobile-controls {
+        display: flex;
+      }
+      
+      .footer {
+        font-size: 10px;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .big-title {
+        font-size: 36px;
+      }
+      
+      .scoreboard {
+        padding: 25px;
+        max-width: 90%;
+      }
+      
+      .scoreboard h1 {
+        font-size: 24px;
+      }
+      
+      .scoreboard h2 {
+        font-size: 16px;
+      }
+      
+      .scoreboard p {
+        font-size: 14px;
       }
     }
   </style>
@@ -266,6 +338,12 @@ For development history, see agent.md
         </div>
       </div>
     </div>
+  </div>
+  
+  <!-- Mobile Controls -->
+  <div id="mobile-controls">
+    <button id="mobile-start-pause">START</button>
+    <button id="mobile-retry">RETRY</button>
   </div>
 
   <script>
@@ -491,6 +569,23 @@ For development history, see agent.md
       
       document.addEventListener("keydown", handleKeyPress);
       document.getElementById("overlay").addEventListener("click", handleOverlayClick);
+      
+      // Mobile touch controls
+      const startPauseBtn = document.getElementById("mobile-start-pause");
+      const retryBtn = document.getElementById("mobile-retry");
+      
+      startPauseBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        handleStartPause();
+      });
+      
+      retryBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        retry();
+      });
+      
+      // Update button text based on game state
+      setInterval(updateMobileButtons, 100);
       
       console.log("✓ Game initialized");
     }
@@ -1112,20 +1207,39 @@ For development history, see agent.md
     // INPUT
     // ============================================================================
     
+    function handleStartPause() {
+      if (gameState === "title") {
+        console.log("Starting game from title screen...");
+        startGame();
+      } else if (gameState === "playing") {
+        gameState = "paused";
+        pauseAudio();
+      } else if (gameState === "paused") {
+        gameState = "playing";
+        resumeAudio();
+      }
+    }
+    
+    function updateMobileButtons() {
+      const startPauseBtn = document.getElementById("mobile-start-pause");
+      if (!startPauseBtn) return;
+      
+      if (gameState === "title") {
+        startPauseBtn.textContent = "START";
+      } else if (gameState === "playing") {
+        startPauseBtn.textContent = "PAUSE";
+      } else if (gameState === "paused") {
+        startPauseBtn.textContent = "RESUME";
+      } else if (gameState === "gameover" || gameState === "complete") {
+        startPauseBtn.textContent = "START";
+      }
+    }
+    
     function handleKeyPress(e) {
       console.log(`Key pressed: ${e.code}, gameState: ${gameState}`);
       if (e.code === "Space") {
         e.preventDefault();
-        if (gameState === "title") {
-          console.log("Starting game from title screen...");
-          startGame();
-        } else if (gameState === "playing") {
-          gameState = "paused";
-          pauseAudio();
-        } else if (gameState === "paused") {
-          gameState = "playing";
-          resumeAudio();
-        }
+        handleStartPause();
       } else if (e.code === "KeyR") {
         retry();
       }
