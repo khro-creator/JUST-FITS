@@ -1,3 +1,49 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   FINAL 4 PIECES SOLVER (Simplified)                         ║
+║              Optimized search for cascade-clearing finale                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+FILE: find_final_4.js
+PURPOSE: Simplified version of find_final_pieces.js with smarter heuristics
+         to find final 4 pieces faster.
+
+WHAT IT DOES:
+- Loads board state after 37 pieces
+- Uses heuristics to reduce search space:
+  * Prioritize pieces that fill gaps
+  * Focus on columns with most empty spaces
+  * Test I-pieces in near-complete rows first
+- Outputs best cascade solutions
+
+HOW IT DIFFERS FROM find_final_pieces.js:
+- SMARTER: Uses gap-filling heuristics instead of brute force
+- FASTER: Reduces search space from billions to thousands
+- TARGETED: Focuses on configurations likely to clear lines
+
+HEURISTICS:
+1. Column Analysis: Identify columns with fewest blocks
+2. Row Completion: Prioritize rows that are 8-9/10 filled
+3. Piece Selection: Prefer long pieces (I) for almost-complete rows
+4. Strategic Placement: Fill gaps that enable cascades
+
+USAGE:
+$ node find_final_4.js
+
+RUNTIME: ~30 seconds (vs hours for brute force)
+
+OUTPUT:
+Best cascade solutions:
+1. [Lines: 2, Height: 9] THINKER(I,1,3) MAKER(Z,1,2) HACKER(T,0,7) LEARNER(L,2,0)
+...
+
+STATUS: Development tool, not used in final version.
+Manual placement still proved faster than automated search.
+
+AUTHOR: Rocio Hernandez Rodriguez
+CREATED: January 2026
+*/
+
 // Script to find optimal final 4 pieces based on board state after piece 37
 
 const SHAPES = {

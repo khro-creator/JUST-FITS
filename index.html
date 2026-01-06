@@ -1,4 +1,79 @@
 <!DOCTYPE html>
+<!--
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          JUST FITS - VISUAL RESUME                           ║
+║                     A Tetris-Based Interactive Portfolio                     ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+FILE: index.html
+PURPOSE: Single-file deterministic Tetris autoplay demonstrating skills, 
+         personality, and cultural fit through gameplay mechanics.
+
+WHAT IT DOES:
+- Automatically plays a pre-scripted 41-piece Tetris game
+- Displays narrative messages when each section starts
+- Shows pieces labeled with personality traits, skills, and work ethic
+- Ends with "THINKER, MAKER, HACKER, LEARNER" finale
+- Displays branded scoreboard with stats and contact info
+- Plays Korobeiniki melody using Web Audio API
+
+HOW IT WORKS:
+1. CONFIGURATION (CONFIG object): Defines game parameters, section messages
+2. TETROMINO SYSTEM (SHAPES object): 7 piece types × 4 rotations using SRS
+3. DETERMINISTIC SCRIPT (SCRIPT array): 41 pre-validated pieces with position/rotation
+4. GAME ENGINE: Animation loop, collision detection, piece locking
+5. LINE CLEARING: Detects complete rows, removes them, applies gravity
+6. SECTION MESSAGING: Triggers when currentSection !== lastSection
+7. RENDERING: Canvas 2D drawing with HUD sidebar
+8. AUDIO: Web Audio API synthesizes Tetris theme procedurally
+9. END GAME: Shows "Keep Propelling" message → Scoreboard with branding
+
+KEY COMPONENTS:
+- Canvas: 10×20 Tetris board (360×720px) + 220px HUD sidebar
+- Board State: 2D array (20 rows × 10 cols), null = empty, object = filled
+- Collision Detection: Checks piece boundaries and board overlaps
+- Lock Delay: 500ms grace period before piece locks
+- Section System: 5 sections (0-4) with narrative progression
+- Validation: All 41 pieces pre-validated (see validate_solution.js)
+
+SECTIONS:
+- Section 0 (Pieces 1-10): Propelland's 10 Principles
+- Section 1 (Pieces 11-19): Good vibes only (Personality)
+- Section 2 (Pieces 20-28): I build things (Maker Skills)
+- Section 3 (Pieces 29-37): My Work Ethic
+- Section 4 (Pieces 38-41): THINKER, MAKER, HACKER, LEARNER finale
+
+BRANDING:
+- Colors: Propelland blue (#0f47f5) and teal (#80ecba)
+- Scoreboard: Rounded corners, teal border, blue header
+- HUD: Bubbly sections with blue theme, teal title
+
+CONTROLS:
+- SPACE: Start game / Pause / Resume
+- R: Retry from beginning
+- Auto-advances through all 41 pieces
+
+TECHNICAL DETAILS:
+- Zero dependencies: Pure vanilla JavaScript
+- Single file: Works on file:// protocol (double-click to run)
+- Canvas rendering: 60 FPS with requestAnimationFrame
+- Retina support: 2× canvas resolution for crisp display
+- Responsive: Centers on viewport, maintains aspect ratio
+- File size: ~60KB uncompressed
+
+FUTURE ENHANCEMENTS:
+- Multi-line cascade finale (see TECHNICAL_DOCUMENTATION.md)
+- Interactive mode toggle
+- Particle effects on line clear
+- Mobile responsive improvements
+
+AUTHOR: Rocio Hernandez Rodriguez
+CREATED: January 2026
+VERSION: 2.0 (Section-based with finale)
+
+For detailed technical documentation, see TECHNICAL_DOCUMENTATION.md
+For development history, see agent.md
+-->
 <html lang="en">
 <head>
   <meta charset="UTF-8">

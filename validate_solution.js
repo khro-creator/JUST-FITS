@@ -1,3 +1,93 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                     TETRIS SOLUTION VALIDATOR                                ║
+║              Pre-validation script for JUST FITS game                        ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+FILE: validate_solution.js
+PURPOSE: Validates that the 41-piece Tetris solution works correctly before
+         deploying to index.html. Ensures no collisions, proper line clears,
+         and safe board height throughout gameplay.
+
+WHAT IT DOES:
+- Simulates the entire 41-piece game sequence
+- Checks each piece for collision at spawn position
+- Drops pieces to landing position using gravity
+- Locks pieces to the board state
+- Detects and clears complete lines
+- Tracks total lines cleared and max board height
+- Visualizes final board state with ASCII art
+- Outputs detailed piece-by-piece breakdown
+
+HOW IT WORKS:
+1. SETUP: Initializes empty 20×10 board (2D array)
+2. PIECE ITERATION: Loops through all 41 pieces in SCRIPT
+3. SPAWN CHECK: Validates piece can spawn at (x, y=0) without collision
+4. GRAVITY SIMULATION: Drops piece down until collision detected
+5. LOCK PIECE: Writes piece blocks to board array
+6. LINE CLEAR: Checks all rows, removes complete lines, shifts down
+7. HEIGHT TRACKING: Records maximum height reached
+8. VALIDATION RESULT: Reports success/failure with statistics
+
+KEY FUNCTIONS:
+- canPlace(piece, board): Checks if piece fits at spawn position
+- findLandingY(piece, board): Finds lowest valid Y position
+- lockPieceToBoard(piece, y, board): Writes piece to board array
+- clearCompleteLines(board): Removes full rows, returns count cleared
+- getMaxHeight(board): Calculates highest non-empty row
+- visualizeBoard(board): ASCII art representation of board state
+
+VALIDATION CHECKS:
+✓ No spawn collisions (all pieces fit at entry)
+✓ No out-of-bounds errors (pieces stay within 10×20 grid)
+✓ Line clearing works correctly (complete rows removed)
+✓ Gravity applied properly (pieces stack naturally)
+✓ Max height ≤ 20 (game doesn't overflow)
+✓ Total lines cleared matches expected (10 lines)
+✓ Final height safe (9/20 rows used)
+
+OUTPUT FORMAT:
+[Piece #/Total] Label (Type, rot=R, x=X) - cleared N lines, height=H/20
+...
+✅ VALIDATION PASSED
+Total pieces: 41
+Total lines cleared: 10
+Final height: 9/20
+
+BOARD VISUALIZATION:
+0  ░░░░░░░░░░  (empty row)
+...
+19 ██████████  (full row)
+
+USAGE:
+$ node validate_solution.js
+
+RETURNS:
+- Exit code 0: Validation passed
+- Exit code 1: Validation failed (collision or overflow)
+
+INTEGRATION:
+This script uses the EXACT same SHAPES and SCRIPT as index.html.
+Any changes to piece sequence must be validated here BEFORE committing.
+
+DEVELOPMENT WORKFLOW:
+1. Modify SCRIPT in index.html
+2. Copy SCRIPT to this file
+3. Run: node validate_solution.js
+4. If ✅ PASSED: commit changes
+5. If ❌ FAILED: debug piece positions/rotations
+
+EDGE CASES TESTED:
+- Pieces spanning spawn zone (negative Y positions)
+- Multiple simultaneous line clears
+- Pieces with irregular shapes (T, L, J, S, Z)
+- Final section stacking (THINKER, MAKER, HACKER, LEARNER)
+
+AUTHOR: Rocio Hernandez Rodriguez
+CREATED: January 2026
+VERSION: 2.0
+*/
+
 // Validation script to test if the generated solution actually works
 
 const SHAPES = {

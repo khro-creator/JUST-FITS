@@ -1,3 +1,71 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                   FINAL PIECES OPTIMIZER                                     ║
+║        Brute-force search for line-clearing finale pieces                    ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+FILE: find_final_pieces.js
+PURPOSE: Brute-force search to find optimal final 4 pieces (THINKER, MAKER,
+         HACKER, LEARNER) that maximize line clears after piece 37.
+
+WHAT IT DOES:
+- Loads board state after first 37 pieces
+- Tries all combinations of 4 pieces (7 types × 4 rotations × 10 positions)
+- Tests each combination for:
+  * No collisions
+  * Maximum line clears
+  * Safe final height
+- Outputs best solutions sorted by lines cleared
+
+HOW IT WORKS:
+1. BOARD STATE: Simulates pieces 1-37, captures board snapshot
+2. LABEL ASSIGNMENT: Final 4 pieces = THINKER, MAKER, HACKER, LEARNER
+3. SEARCH SPACE: 7 types × 4 rotations × 10 positions = 280 per piece
+4. PERMUTATIONS: Tests all 280^4 combinations (very slow)
+5. VALIDATION: Checks collision, height, line clears for each combo
+6. SCORING: Ranks solutions by total lines cleared
+7. OUTPUT: Top 10 solutions with piece configurations
+
+SEARCH SPACE:
+- Piece 1 (THINKER): 280 possibilities
+- Piece 2 (MAKER): 280 possibilities  
+- Piece 3 (HACKER): 280 possibilities
+- Piece 4 (LEARNER): 280 possibilities
+- Total: 6,144,000,000 combinations (6.14 billion)
+
+OPTIMIZATIONS:
+- Early termination: Skip if collision detected
+- Height pruning: Skip if board exceeds 18 rows
+- Best-first: Track top N solutions only
+
+USAGE:
+$ node find_final_pieces.js
+
+WARNING: This is computationally EXPENSIVE!
+Expect runtime of several minutes to hours depending on CPU.
+
+OUTPUT:
+Top 10 solutions:
+1. [Lines: 3] THINKER(I,1,3) MAKER(Z,1,2) HACKER(T,0,7) LEARNER(L,2,0)
+2. [Lines: 2] THINKER(T,0,5) MAKER(S,1,1) HACKER(J,2,8) LEARNER(I,0,0)
+...
+
+REALITY CHECK:
+In practice, this tool was created but NOT used for final solution.
+User manually specified piece positions based on visual puzzle-fitting:
+- THINKER: vertical between Problem-Solving and Reliable
+- MAKER: vertical in pocket over Visionary
+- HACKER: over Adaptability
+- LEARNER: short end in pocket over Innovation
+
+Manual placement was faster and more intuitive than waiting for
+brute-force search to complete.
+
+AUTHOR: Rocio Hernandez Rodriguez
+CREATED: January 2026
+STATUS: Experimental / Not Used in Final
+*/
+
 // Find optimal final 4 pieces that clear lines
 const SHAPES = {
   I: [

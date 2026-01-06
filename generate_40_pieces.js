@@ -1,3 +1,68 @@
+/*
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                    40-PIECE SOLUTION GENERATOR                               ║
+║             Random piece placement with constraint solving                   ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+FILE: generate_40_pieces.js
+PURPOSE: Generates a valid 40-piece Tetris solution with randomized piece
+         positions while ensuring no collisions and reasonable board height.
+
+WHAT IT DOES:
+- Creates 40-piece sequence divided into 4 narrative sections
+- Randomly selects piece types, rotations, and X positions
+- Validates each piece placement (no collisions)
+- Tracks board state and height throughout generation
+- Outputs valid SCRIPT array for use in index.html
+
+HOW IT WORKS:
+1. LABEL POOLS: Define words for each section (Principles, Personality, Maker, Work Ethic)
+2. RANDOM GENERATION: For each piece, try random type/rotation/x combinations
+3. COLLISION CHECK: Test if piece fits without overlapping existing blocks
+4. LOCK & CLEAR: Place piece, check for line clears, apply gravity
+5. HEIGHT TRACKING: Ensure board doesn't overflow (max 20 rows)
+6. RETRY MECHANISM: If stuck, backtrack and try different pieces
+7. OUTPUT: Generate JavaScript SCRIPT array ready for copy/paste
+
+SECTION STRUCTURE:
+- Section 0 (Pieces 1-10): Propelland's 10 Principles
+- Section 1 (Pieces 11-19): Personality traits (9 pieces)
+- Section 2 (Pieces 20-28): Maker skills (9 pieces)
+- Section 3 (Pieces 29-37): Work Ethic (9 pieces)
+- Section 4 (Pieces 38-40): Final 3 pieces (THINKER, MAKER, HACKER)
+
+CONSTRAINTS:
+- All 7 piece types used (I, O, T, L, J, S, Z)
+- Varied rotations for realism (0-3)
+- X positions within bounds (0-9)
+- Max height ≤ 18 rows (safety margin)
+- No spawn collisions
+
+USAGE:
+$ node generate_40_pieces.js
+
+OUTPUT:
+Generates valid SCRIPT array and logs:
+- Piece-by-piece placement details
+- Lines cleared at each step
+- Final height and statistics
+- JavaScript array ready to copy to index.html
+
+LIMITATIONS:
+- Does NOT optimize for cascading line clears
+- Does NOT guarantee Perfect Clear
+- Random generation = unpredictable aesthetics
+- May take multiple runs to find good solution
+
+NOTE: This file was used for initial solution generation.
+Current implementation uses hand-tuned SCRIPT for better narrative flow.
+See validate_solution.js for the actual 41-piece solution.
+
+AUTHOR: Rocio Hernandez Rodriguez
+CREATED: January 2026
+STATUS: Historical / Development Tool
+*/
+
 // 40-Piece Solution Generator
 // Structure:
 // - Section 0: 10 Propelland Principles

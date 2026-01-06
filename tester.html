@@ -1,4 +1,70 @@
 <!DOCTYPE html>
+<!--
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                      TETRIS SCRIPT TESTER                                    ║
+║                 Visual debugger for piece placement                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+
+FILE: tester.html
+PURPOSE: Visual testing tool to debug and visualize Tetris piece placements
+         before committing to main game.
+
+WHAT IT DOES:
+- Displays interactive 10×20 Tetris board grid
+- Allows manual testing of piece positions and rotations
+- Shows piece labels and colors
+- Highlights collisions and invalid placements
+- Visualizes board state after each piece
+
+HOW IT WORKS:
+1. BOARD GRID: HTML grid with 200 cells (10 cols × 20 rows)
+2. PIECE INPUT: Manual entry of type, rotation, x position
+3. COLLISION CHECK: Validates placement before adding to board
+4. VISUAL FEEDBACK: Colors show piece types, red = collision
+5. STEP-THROUGH: Add pieces one at a time, see cumulative state
+
+FEATURES:
+- Click cells to toggle occupied/empty
+- Input form for piece configuration
+- Reset button to clear board
+- Export button to generate SCRIPT array
+- Color-coded pieces (Tetris Guideline colors)
+- Collision highlighting in red
+
+USAGE:
+1. Open tester.html in browser
+2. Select piece type (I, O, T, L, J, S, Z)
+3. Choose rotation (0-3)
+4. Enter X position (0-9)
+5. Click "Add Piece" to test placement
+6. Repeat to build sequence
+7. Export SCRIPT when satisfied
+
+USE CASES:
+- Testing new piece combinations
+- Debugging collision issues
+- Visualizing board density
+- Prototyping finale sequences
+- Quick what-if scenarios
+
+ADVANTAGES OVER validate_solution.js:
+- Visual feedback (vs console text)
+- Interactive (vs static script)
+- Immediate validation
+- Easier to understand board state
+
+LIMITATIONS:
+- No gravity simulation (manual placement)
+- No line clearing visualization
+- No cascade testing
+- Manual process (not automated)
+
+STATUS: Development tool for prototyping.
+Main validation still done via validate_solution.js for consistency.
+
+AUTHOR: Rocio Hernandez Rodriguez
+CREATED: January 2026
+-->
 <html>
 <head>
     <title>Tetris Script Tester</title>
