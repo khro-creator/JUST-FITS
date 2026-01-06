@@ -15,7 +15,8 @@ Each falling piece carries a word that describes what I bring to Propelland:
 - **Section 1 (Pieces 11-19) — "MY SKILLS":** Good vibes only — personality traits and cultural fit
 - **Section 2 (Pieces 20-28) — "MY WORK ETHIC":** I build things — maker skills and capabilities
 - **Section 3 (Pieces 29-37):** My Work Ethic — professional approach and dedication
-- **Section 4 (Pieces 38-41) — "I AM A...":** METHODICAL, SIMPLICITY, PRECISION, LEARNER — the four pillars
+- **Section 4 (Pieces 38-41) — "I AM A...":** THINKER, MAKER, HACKER, LEARNER — the four pillars
+  - Note: Methodical, Simplicity, and Precision are skills in Section 2
 
 As pieces drop, lines clear when complete rows form, demonstrating continuous progress and strategic placement. The game ends with a line-clearing cascade and the message **"Keep Propelling"** — closing with Propelland's own words.
 

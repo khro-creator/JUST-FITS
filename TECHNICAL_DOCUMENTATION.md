@@ -16,7 +16,8 @@ Built as a creative response to Propelland's application challenge: demonstrate 
 - Changed from cascade-clear to progressive gameplay
 - 41 pieces divided into 5 sections showing journey and values
 - Section-based messaging system with labels: MY PERSONALITY, MY SKILLS, MY WORK ETHIC, I AM A...
-- Final section adds "METHODICAL, SIMPLICITY, PRECISION, LEARNER" as puzzle pieces
+- Final section adds "THINKER, MAKER, HACKER, LEARNER" as puzzle pieces
+- Note: Methodical, Simplicity, and Precision are skills in Section 2 (pieces 21, 25, 26)
 - Ends with line clear cascade (1 line) and "Keep Propelling" message
 - **Success:** Playable, elegant, demonstrates strategic thinking
 
@@ -460,13 +461,13 @@ linesToClear.forEach(y => {
 - **Max piece types per game:** 41 (custom script, not random)
 
 ### Piece Distribution
-- **I-pieces:** 7 (vertical lines, METHODICAL finale)
+- **I-pieces:** 7 (vertical lines, THINKER finale)
 - **O-pieces:** 6 (2×2 squares)
-- **T-pieces:** 6 (including SIMPLICITY finale)
+- **T-pieces:** 6 (including HACKER finale, plus Methodical in Section 2)
 - **L-pieces:** 6 (including LEARNER finale)
 - **J-pieces:** 5
-- **S-pieces:** 5
-- **Z-pieces:** 6
+- **S-pieces:** 5 (including Precision in Section 2)
+- **Z-pieces:** 6 (including MAKER finale)
 
 ## Key Technical Challenges & Solutions
 
