@@ -42,7 +42,6 @@ SECTIONS:
 - Section 2 (Pieces 20-28): I build things (My Skills)
 - Section 3 (Pieces 29-37): My Work Ethic
 - Section 4 (Pieces 38-41): THINKER, MAKER, HACKER, LEARNER finale
-  (Note: Methodical and Simplicity are in Section 2, not finale)
 
 BRANDING:
 - Colors: Propelland blue (#0f47f5) and teal (#80ecba)
@@ -1399,10 +1398,10 @@ For development history, see agent.md
       document.getElementById("overlay").classList.remove("active");
       resetGame();
       
-      // Add teal border on mobile when game starts
+      // Add gray border on mobile when game starts
       const canvas = document.getElementById("canvas");
       if (window.innerWidth <= 768) {
-        canvas.style.border = window.innerWidth <= 480 ? "2px solid #80ecba" : "3px solid #80ecba";
+        canvas.style.border = window.innerWidth <= 480 ? "2px solid #333" : "3px solid #333";
       }
       
       // Request wake lock to prevent screen from sleeping
