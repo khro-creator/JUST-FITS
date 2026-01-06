@@ -1075,8 +1075,7 @@ For development history, see agent.md
       const centerX = (CONFIG.COLS * CONFIG.CELL_SIZE) / 2;
       const centerY = (CONFIG.ROWS * CONFIG.CELL_SIZE) / 2;
       
-      ctx.fillStyle = "rgba(0, 0, 0, 0.85)";
-      ctx.fillRect(0, centerY - 50, CONFIG.COLS * CONFIG.CELL_SIZE, 100);
+      // Removed background box - transparent background to show falling pieces
       
       ctx.fillStyle = "#FFD700";
       ctx.font = "bold 28px sans-serif";
