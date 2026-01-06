@@ -183,6 +183,14 @@ For development history, see agent.md
       line-height: 1.8;
     }
     
+    .mobile-instructions {
+      display: none;
+    }
+    
+    .desktop-instructions {
+      display: inline;
+    }
+    
     .scoreboard {
       background: #1a1a1a;
       border: 4px solid #80ecba;
@@ -317,6 +325,14 @@ For development history, see agent.md
       .footer {
         font-size: 10px;
       }
+      
+      .mobile-instructions {
+        display: inline;
+      }
+      
+      .desktop-instructions {
+        display: none;
+      }
     }
     
     @media (max-width: 480px) {
@@ -370,7 +386,8 @@ For development history, see agent.md
         <div class="blink">PRESS START</div>
         <div class="footer">
           AUTOPLAY DEMO<br>
-          SPACE = START • R = RETRY
+          <span class="desktop-instructions">SPACE = START • R = RETRY</span>
+          <span class="mobile-instructions">TAP = START, PAUSE, RESUME</span>
         </div>
       </div>
     </div>
@@ -1258,6 +1275,16 @@ For development history, see agent.md
     // ============================================================================
     
     function handleStartPause() {
+      // iOS requires AudioContext creation in user gesture
+      if (!audioContext && !musicStarted) {
+        try {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          console.log('AudioContext created in user gesture, state:', audioContext.state);
+        } catch (e) {
+          console.warn('Could not create AudioContext', e);
+        }
+      }
+      
       if (gameState === "title") {
         console.log("Starting game from title screen...");
         startGame();
@@ -1307,12 +1334,27 @@ For development history, see agent.md
       resetGame();
       
       if (!musicStarted) {
-        initAudio();
-        musicStarted = true;
+        if (audioContext) {
+          // AudioContext already created in user gesture, just start music
+          console.log('Using existing AudioContext, starting music');
+          if (audioContext.state === 'suspended') {
+            audioContext.resume().then(() => {
+              console.log('AudioContext resumed, starting music');
+              startMusic();
+            });
+          } else {
+            startMusic();
+          }
+          musicStarted = true;
+        } else {
+          // Fallback: try to initialize audio (may not work on iOS)
+          initAudio();
+          musicStarted = true;
+        }
       } else if (audioContext && audioContext.state === 'suspended') {
-        // Resume audio if it was suspended (iOS)
+        // Resume audio if it was suspended
         audioContext.resume().then(() => {
-          console.log('Audio resumed on game start');
+          console.log('Audio resumed on game restart');
         });
       }
     }
@@ -1342,9 +1384,12 @@ For development history, see agent.md
     
     function initAudio() {
       try {
-        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (!audioContext) {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          console.log('AudioContext created in initAudio, state:', audioContext.state);
+        }
         
-        // iOS requires user gesture to start audio context
+        // Ensure context is running
         if (audioContext.state === 'suspended') {
           audioContext.resume().then(() => {
             console.log('Audio context resumed');
