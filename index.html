@@ -282,7 +282,7 @@ For development history, see agent.md
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 0;
+        padding: 40px 0 0 0;
         margin: 0;
         touch-action: manipulation;
         cursor: pointer;
@@ -1397,6 +1397,10 @@ For development history, see agent.md
       gameState = "playing";
       document.getElementById("overlay").classList.remove("active");
       resetGame();
+      
+      // Ensure timing is reset for immediate piece falling
+      lastTime = 0;
+      dropCounter = 0;
       
       // Add gray border on mobile when game starts
       const canvas = document.getElementById("canvas");
