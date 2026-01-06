@@ -1,7 +1,31 @@
 # JUST FITS — Agent Development Instructions
 
 ## Project Overview
-**JUST FITS** is a deterministic, autoplay Tetris-inspired visual resume designed to showcase creative technologist skills through an interactive 3-act narrative. The project uses the Tetris metaphor to demonstrate strategic thinking, adaptability, and problem-solving in a playful, memorable format.
+**JUST FITS** is a deterministic, autoplay Tetris-inspired visual resume designed to showcase creative technologist skills through an interactive narrative. The project uses the Tetris metaphor to demonstrate strategic thinking, adaptability, and problem-solving in a playful, memorable format.
+
+## ⚠️ IMPORTANT: Current Implementation vs Original Vision
+
+### Original Vision (Documented Below)
+This file documents the **ORIGINAL 3-ACT CASCADE CONCEPT** that was attempted but ultimately deemed unsolvable:
+- 3-act structure: Personality → Maker → Work Ethic (fall order)
+- Reverse cascade: Work Ethic clears first → Maker clears → Personality clears → Complete board clear
+- Final piece "Limitless" triggers entire cascade
+- **STATUS:** Impossible to solve — cascade physics couldn't be engineered deterministically
+
+### Current Implementation (What Actually Works)
+The **LIVE VERSION** uses a different, simplified approach:
+- **41 pieces** divided into **4 sections** + finale
+- **Section-based messaging** triggers when each section starts
+- **Progressive gameplay** with line clears throughout (10 total)
+- **Final section** adds 4 pieces: THINKER, MAKER, HACKER, LEARNER
+- **Cascade finish:** LEARNER piece clears 1 line, game ends with "Keep Propelling" message
+- **FILES:** See [TECHNICAL_DOCUMENTATION.md](TECHNICAL_DOCUMENTATION.md) for current implementation details
+
+**👉 Use this file (agent.md) as historical context for the original vision. Use TECHNICAL_DOCUMENTATION.md for actual implementation.**
+
+---
+
+## Original Vision Documentation (For Reference Only)
 
 ## Core Metaphor
 **"Tetris" = Perfect Fit + Strategic Alignment**

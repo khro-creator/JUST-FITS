@@ -84,7 +84,7 @@ const SCRIPT = [
   { type: "Z", rotation: 1, x: 2, label: "Problem-Solving", section: 3, lineMessage: 35 },
   { type: "S", rotation: 1, x: 5, label: "Reliable", section: 3, lineMessage: 36 },
   { type: "I", rotation: 1, x: 3, label: "THINKER", section: 4, lineMessage: 37 },
-  // { type: "Z", rotation: 1, x: 6, label: "MAKER", section: 4, lineMessage: 38 },
+  { type: "Z", rotation: 1, x: 2, label: "MAKER", section: 4, lineMessage: 38 },
   { type: "T", rotation: 0, x: 7, label: "HACKER", section: 4, lineMessage: 39 },
   { type: "L", rotation: 2, x: 0, label: "LEARNER", section: 4, lineMessage: 40 }
 ];

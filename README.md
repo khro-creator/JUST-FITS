@@ -3,21 +3,22 @@
 
 I was asked to defend *why Propelland should pick me* — without sending 20 pages.
 
-So I built **JUST / FITS**: a deterministic Tetris autoplay that demonstrates **Perfect Clear logic** using Propelland's own principles and values.
+So I built **JUST / FITS**: a deterministic Tetris autoplay that communicates personality, skills, and values through gameplay mechanics.
+
+## The Metaphor
 
 **Why Tetris?**  
 Tetris is a perfect metaphor for real work in a technology team: pieces arrive fast, constraints change, and pressure increases. Progress comes from someone who can **read the chaos**, make smart placements, and turn uncertainty into a clean, usable outcome — without breaking what's already stacked.
 
-**The Perfect Clear Concept:**  
-In Tetris, a "Perfect Clear" means clearing the entire board with zero blocks remaining — the ultimate demonstration of efficiency and precision. This implementation uses **30 pieces × 4 blocks = 120 blocks = 12 complete rows**, making a Perfect Clear mathematically possible.
-
+**The Narrative Structure:**  
 Each falling piece carries a word that describes what I bring to Propelland:
-- **Section 1 (Thinker):** 9 pieces showcasing personality traits
-- **Section 2 (Maker):** 9 pieces demonstrating what I build  
-- **Section 3 (Principles):** 9 pieces embodying Propelland's 10 core principles
-- **Section 4 (Finale):** 3 pieces — **THINKER**, **MAKER**, **HACKER**
+- **Section 0 (Pieces 1-10):** Propelland's 10 Principles — alignment with company values
+- **Section 1 (Pieces 11-19):** Good vibes only — personality traits and cultural fit
+- **Section 2 (Pieces 20-28):** I build things — maker skills and capabilities
+- **Section 3 (Pieces 29-37):** My Work Ethic — professional approach and dedication
+- **Section 4 (Pieces 38-41):** THINKER, MAKER, HACKER, LEARNER — the four pillars
 
-As pieces drop, lines clear when complete rows form, demonstrating continuous progress and adaptation. The game ends with the three words that define Propelland's team identity.
+As pieces drop, lines clear when complete rows form, demonstrating continuous progress and strategic placement. The game ends with a line-clearing cascade and the message **"Keep Propelling"** — closing with Propelland's own words.
 
 **And it reflects how I work cross-functionally:** I build the bridge between strategy/design intent and technical execution by turning abstract ideas into concrete prototypes people can react to.
 
@@ -35,13 +36,30 @@ This implementation follows the official **Tetris Guideline** (standardized by T
 
 ## Run
 - **GitHub Pages:** [https://khro-creator.github.io/JUST-FITS/](https://khro-creator.github.io/JUST-FITS/)
-- **Local (Mac):** download and double-click `index.html`.
-- Press **Start** (or **Space**) to begin (music starts after the first gesture due to browser rules).
+- **Local (Mac):** download and double-click `index.html`
+- Press **Start** (or **Space**) to begin (music starts after the first gesture due to browser rules)
 - **R** = Retry, **Space** = Pause/Resume
+
+## Project Statistics
+- **Total pieces:** 41 (across 4 sections + finale)
+- **Lines cleared:** 10 throughout gameplay
+- **Final cascade:** LEARNER piece clears 1 line to finish
+- **Total lines of code:** 1,217 (single HTML file)
+- **Dependencies:** Zero — pure vanilla JavaScript
+- **File size:** ~60KB uncompressed
 
 ## Technical Highlights
 - **Single HTML file** — no dependencies, no CDN, works on file:// and HTTPS
-- **Larger cells (38px)** — ensures all words fit legibly inside pieces
+- **Deterministic autoplay** — pre-validated script ensures perfect execution every time
+- **Web Audio API** — Procedurally generated Korobeiniki (Tetris theme) chiptune melody
 - **Smart text rendering** — labels centered on entire piece shape, not per-cell
-- **Deterministic autoplay** — pre-validated script ensures perfect execution
-- **Responsive canvas** — retina-ready with proper pixel scaling
+- **Validation system** — 279-line Node.js script pre-validates all 41 pieces before commit
+- **Section messaging** — Narrative guides viewer through 4-act structure
+- **Responsive canvas** — Retina-ready with proper pixel scaling (38px cells)
+
+## Files
+- **index.html** (1,217 lines) — Complete game implementation
+- **validate_solution.js** (279 lines) — Automated validation with board visualization
+- **TECHNICAL_DOCUMENTATION.md** — Comprehensive technical breakdown, algorithms, story, and future enhancements
+- **agent.md** — Original development instructions (3-act cascade concept)
+- **README.md** — This file
