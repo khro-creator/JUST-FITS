@@ -17,7 +17,7 @@ Each falling piece carries a word that describes what I bring to Propelland:
 - **Section 3 (Pieces 29-37) — "How I Work":** Work ethic and professional approach
 - **Section 4 (Pieces 38-41) — "I AM A...":** THINKER, MAKER, HACKER, LEARNER — the four pillars
 
-As pieces drop, lines clear when complete rows form, demonstrating continuous progress and strategic placement. The game ends with a line-clearing cascade and the message **"Keep Propelling"** — closing with Propelland's own words.
+As pieces drop, lines clear when complete rows form, demonstrating continuous progress and strategic placement. The game ends with a line-clearing cascade and the message **"Let's Keep Propelling!"** — closing with Propelland's own words.
 
 **And it reflects how I work cross-functionally:** I build the bridge between strategy/design intent and technical execution by turning abstract ideas into concrete prototypes people can react to.
 
@@ -40,10 +40,10 @@ This implementation follows the official **Tetris Guideline** (standardized by T
 - **R** = Retry, **Space** = Pause/Resume
 
 ## Project Statistics
-- **Total pieces:** 41 (across 4 sections + finale)
+- **Total pieces:** 41 (across 5 sections: 0-4)
 - **Lines cleared:** 10 throughout gameplay
 - **Final cascade:** LEARNER piece clears 1 line to finish
-- **Total lines of code:** 1,217 (single HTML file)
+- **Total lines of code:** 1,348 (single HTML file)
 - **Dependencies:** Zero — pure vanilla JavaScript
 - **File size:** ~60KB uncompressed
 
@@ -53,12 +53,10 @@ This implementation follows the official **Tetris Guideline** (standardized by T
 - **Web Audio API** — Procedurally generated Korobeiniki (Tetris theme) chiptune melody
 - **Smart text rendering** — labels centered on entire piece shape, not per-cell
 - **Validation system** — 279-line Node.js script pre-validates all 41 pieces before commit
-- **Section messaging** — Narrative guides viewer through 4-act structure
+- **Section messaging** — Narrative guides viewer through 5-section structure
 - **Responsive canvas** — Retina-ready with proper pixel scaling (38px cells)
 
 ## Files
-- **index.html** (1,217 lines) — Complete game implementation
-- **validate_solution.js** (279 lines) — Automated validation with board visualization
+- **index.html** — Complete game implementation
 - **TECHNICAL_DOCUMENTATION.md** — Comprehensive technical breakdown, algorithms, story, and future enhancements
-- **agent.md** — Original development instructions (3-act cascade concept)
 - **README.md** — This file
