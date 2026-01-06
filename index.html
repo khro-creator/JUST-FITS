@@ -78,7 +78,7 @@ For development history, see agent.md
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>JUST FITS — A Perfect Fit Story</title>
   <style>
     * {
@@ -96,11 +96,17 @@ For development history, see agent.md
       align-items: center;
       min-height: 100vh;
       overflow: hidden;
+      padding: 0;
     }
     
     #container {
       position: relative;
       text-align: center;
+      width: 100%;
+      max-width: 100vw;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     
     canvas {
@@ -108,6 +114,9 @@ For development history, see agent.md
       background: #000;
       display: block;
       margin: 0 auto;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
     }
     
     #overlay {
@@ -273,7 +282,22 @@ For development history, see agent.md
     
     @media (max-width: 768px) {
       body {
-        overflow: auto;
+        overflow-x: hidden;
+        overflow-y: auto;
+        align-items: flex-start;
+        padding: 20px 10px 100px 10px;
+      }
+      
+      #container {
+        width: 100%;
+        padding: 0;
+      }
+      
+      canvas {
+        width: 100% !important;
+        height: auto !important;
+        max-width: 100vw;
+        border-width: 2px;
       }
       
       .big-title {
@@ -286,11 +310,6 @@ For development history, see agent.md
         font-size: 18px;
       }
       
-      canvas {
-        max-width: 100%;
-        height: auto;
-      }
-      
       #mobile-controls {
         display: flex;
       }
@@ -301,25 +320,42 @@ For development history, see agent.md
     }
     
     @media (max-width: 480px) {
+      body {
+        padding: 10px 5px 100px 5px;
+      }
+      
       .big-title {
-        font-size: 36px;
+        font-size: 32px;
+      }
+      
+      .subtitle {
+        font-size: 12px;
+      }
+      
+      canvas {
+        border-width: 1px;
       }
       
       .scoreboard {
-        padding: 25px;
-        max-width: 90%;
+        padding: 20px;
+        max-width: 95%;
       }
       
       .scoreboard h1 {
-        font-size: 24px;
+        font-size: 20px;
       }
       
       .scoreboard h2 {
-        font-size: 16px;
+        font-size: 14px;
       }
       
       .scoreboard p {
-        font-size: 14px;
+        font-size: 12px;
+      }
+      
+      #mobile-controls button {
+        font-size: 12px;
+        padding: 12px 20px;
       }
     }
   </style>
@@ -555,11 +591,25 @@ For development history, see agent.md
       ctx = canvas.getContext("2d");
       
       const scale = window.devicePixelRatio || 1;
-      const width = CONFIG.COLS * CONFIG.CELL_SIZE + CONFIG.HUD_WIDTH;
-      const height = CONFIG.ROWS * CONFIG.CELL_SIZE;
+      const baseWidth = CONFIG.COLS * CONFIG.CELL_SIZE + CONFIG.HUD_WIDTH;
+      const baseHeight = CONFIG.ROWS * CONFIG.CELL_SIZE;
       
-      canvas.width = width * scale;
-      canvas.height = height * scale;
+      // Check if mobile
+      const isMobile = window.innerWidth <= 768;
+      let width = baseWidth;
+      let height = baseHeight;
+      
+      if (isMobile) {
+        // Scale to fit mobile viewport with padding
+        const maxWidth = window.innerWidth - 20;
+        const maxHeight = window.innerHeight - 200; // Leave space for controls
+        const scaleToFit = Math.min(maxWidth / baseWidth, maxHeight / baseHeight, 1);
+        width = baseWidth * scaleToFit;
+        height = baseHeight * scaleToFit;
+      }
+      
+      canvas.width = baseWidth * scale;
+      canvas.height = baseHeight * scale;
       canvas.style.width = width + "px";
       canvas.style.height = height + "px";
       
@@ -1259,6 +1309,11 @@ For development history, see agent.md
       if (!musicStarted) {
         initAudio();
         musicStarted = true;
+      } else if (audioContext && audioContext.state === 'suspended') {
+        // Resume audio if it was suspended (iOS)
+        audioContext.resume().then(() => {
+          console.log('Audio resumed on game start');
+        });
       }
     }
     
@@ -1288,7 +1343,18 @@ For development history, see agent.md
     function initAudio() {
       try {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        startMusic();
+        
+        // iOS requires user gesture to start audio context
+        if (audioContext.state === 'suspended') {
+          audioContext.resume().then(() => {
+            console.log('Audio context resumed');
+            startMusic();
+          }).catch(e => {
+            console.warn('Could not resume audio context', e);
+          });
+        } else {
+          startMusic();
+        }
       } catch (e) {
         console.warn("Web Audio not supported", e);
       }
