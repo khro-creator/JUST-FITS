@@ -1187,7 +1187,7 @@ For development history, see agent.md
       y += 110;
       ctx.fillStyle = "rgba(15, 71, 245, 0.1)";
       ctx.beginPath();
-      ctx.roundRect(hudX, y - 5, hudWidth, 90, 12);
+      ctx.roundRect(hudX, y - 5, hudWidth, 105, 12);
       ctx.fill();
       ctx.strokeStyle = "rgba(15, 71, 245, 0.3)";
       ctx.lineWidth = 2;
@@ -1196,22 +1196,22 @@ For development history, see agent.md
       ctx.fillStyle = "#0f47f5";
       ctx.font = "12px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("STATS", hudCenterX, y + 10);
+      ctx.fillText("STATS", hudCenterX, y + 15);
       
       ctx.fillStyle = "#FFF";
       ctx.font = "14px sans-serif";
-      y += 30;
+      y += 35;
       ctx.fillText(`Lines: ${linesCleared}`, hudCenterX, y);
-      y += 20;
+      y += 22;
       ctx.fillText(`Score: ${score}`, hudCenterX, y);
-      y += 20;
+      y += 22;
       ctx.fillText(`Level: ${level}`, hudCenterX, y);
       
       // Section Info - bubbly card
-      y += 35;
+      y += 40;
       ctx.fillStyle = "rgba(15, 71, 245, 0.1)";
       ctx.beginPath();
-      ctx.roundRect(hudX, y - 5, hudWidth, 65, 12);
+      ctx.roundRect(hudX, y - 5, hudWidth, 70, 12);
       ctx.fill();
       ctx.strokeStyle = "rgba(15, 71, 245, 0.3)";
       ctx.lineWidth = 2;
@@ -1220,15 +1220,13 @@ For development history, see agent.md
       ctx.fillStyle = "#0f47f5";
       ctx.font = "12px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("SECTION", hudCenterX, y + 10);
+      ctx.fillText("SECTION", hudCenterX, y + 15);
       
       ctx.fillStyle = "#FFF";
       ctx.font = "bold 13px sans-serif";
-      y += 30;
+      y += 35;
       if (currentSection === 0) {
         ctx.fillText("PROPELLAND'S", hudCenterX, y);
-        y += 15;
-        ctx.fillText("PRINCIPLES", hudCenterX, y);
       } else if (currentSection === 1) {
         ctx.fillText("MY PERSONALITY", hudCenterX, y);
       } else if (currentSection === 2) {
