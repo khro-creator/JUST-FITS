@@ -282,7 +282,7 @@ For development history, see agent.md
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 40px 0 0 0;
+        padding: 50px 0 0 0;
         margin: 0;
         touch-action: manipulation;
         cursor: pointer;
@@ -1286,6 +1286,7 @@ For development history, see agent.md
         retryBtn.addEventListener("click", retry);
         retryBtn.addEventListener("touchend", (e) => {
           e.preventDefault();
+          e.stopPropagation();
           retry();
         }, { passive: false });
       }
@@ -1470,8 +1471,11 @@ For development history, see agent.md
       
       document.getElementById("overlay").classList.remove("active");
       
-      // Call startGame to properly initialize everything including border, wake lock, and music
-      startGame();
+      // Small delay to prevent the touch event from immediately pausing the game
+      setTimeout(() => {
+        // Call startGame to properly initialize everything including border, wake lock, and music
+        startGame();
+      }, 100);
       
       console.log('Retry complete, gameState:', gameState);
     }
