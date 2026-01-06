@@ -11,12 +11,11 @@ Tetris is a perfect metaphor for real work in a technology team: pieces arrive f
 
 **The Narrative Structure:**  
 Each falling piece carries a word that describes what I bring to Propelland:
-- **Section 0 (Pieces 1-10) — "MY PERSONALITY":** Propelland's 10 Principles — alignment with company values
-- **Section 1 (Pieces 11-19) — "MY SKILLS":** Good vibes only — personality traits and cultural fit
-- **Section 2 (Pieces 20-28) — "MY WORK ETHIC":** I build things — maker skills and capabilities
-- **Section 3 (Pieces 29-37):** My Work Ethic — professional approach and dedication
+- **Section 0 (Pieces 1-10) — "Propelland's Principles":** Alignment with company's 10 core values
+- **Section 1 (Pieces 11-19) — "Good Vibes Only":** Personality traits and cultural fit
+- **Section 2 (Pieces 20-28) — "I Build Things":** Skills and maker capabilities (includes Methodical, Simplicity, Precision)
+- **Section 3 (Pieces 29-37) — "How I Work":** Work ethic and professional approach
 - **Section 4 (Pieces 38-41) — "I AM A...":** THINKER, MAKER, HACKER, LEARNER — the four pillars
-  - Note: Methodical, Simplicity, and Precision are skills in Section 2
 
 As pieces drop, lines clear when complete rows form, demonstrating continuous progress and strategic placement. The game ends with a line-clearing cascade and the message **"Keep Propelling"** — closing with Propelland's own words.
 
