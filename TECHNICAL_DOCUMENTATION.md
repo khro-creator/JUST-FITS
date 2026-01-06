@@ -49,7 +49,7 @@ Built as a creative response to Propelland's application challenge: demonstrate 
 - **HTML5 Canvas** — 2D rendering context for game board
 - **Web Audio API** — Procedurally generated Korobeiniki chiptune melody
 - **CSS Grid/Flexbox** — Responsive UI layout
-- **Single File Architecture** — Entire application in one `index.html` (1217 lines)
+- **Single File Architecture** — Entire application in one `index.html` (1,348 lines)
 
 ### System Components
 
@@ -211,7 +211,7 @@ function checkCascade() {
 **Flow:**
 1. All 41 pieces have dropped (`scriptIndex >= SCRIPT.length`)
 2. Wait 300ms for final piece to settle
-3. Show "Keep Propelling" message for 2000ms
+3. Show "Let's Keep Propelling!" message for 2000ms
 4. Display scoreboard with stats
 
 #### 9. Audio System (lines 1044-1155)
@@ -304,85 +304,9 @@ function drawCell(x, y, color, label) {
 - **Retina Support:** Canvas width/height set to 2× for crisp rendering
 - **Label Rendering:** Text centered on piece's center of mass (4-block average position)
 
-## Algorithms & Validation
+## Algorithms & Core Game Logic
 
-### 1. Piece Placement Validation
-**File:** `validate_solution.js` (279 lines)
-
-**Purpose:** Pre-validate entire 41-piece sequence before committing to code
-
-**Process:**
-```javascript
-function validateSolution() {
-  const board = Array(20).fill(null).map(() => Array(10).fill(null));
-  let linesCleared = 0;
-  let maxHeight = 0;
-  
-  for (let i = 0; i < SCRIPT.length; i++) {
-    const piece = SCRIPT[i];
-    
-    // 1. Check collision at spawn
-    if (!canPlace(piece, board)) {
-      console.error(`❌ Piece ${i} collision at spawn`);
-      return false;
-    }
-    
-    // 2. Drop piece to landing position
-    const landY = findLandingY(piece, board);
-    
-    // 3. Lock piece to board
-    lockPieceToBoard(piece, landY, board);
-    
-    // 4. Check and clear complete lines
-    const cleared = clearCompleteLines(board);
-    linesCleared += cleared;
-    
-    // 5. Track max height
-    maxHeight = Math.max(maxHeight, getMaxHeight(board));
-    
-    console.log(`[${i+1}/${SCRIPT.length}] ${piece.label} - cleared ${cleared} lines, height=${maxHeight}/20`);
-  }
-  
-  console.log(`✅ VALIDATION PASSED - ${linesCleared} total lines cleared`);
-  return true;
-}
-```
-
-**Board Visualization:**
-```
-After piece 41 (LEARNER):
-0  ░░░░░░░░░░
-1  ░░░░░░░░░░
-2  ░░░░░░░░░░
-3  ░░░░░░░░░░
-4  ░░░░░░░░░░
-5  ░░░░░░░░░░
-6  ░░░░░░░░░░
-7  ░░░░░░░░░░
-8  ░░░░░░░░░░
-9  ░░░░░░░░░░
-10 ░░░░░░░░░░
-11 ██████████  ← Line cleared by LEARNER
-12 ██░░░░░███
-13 ██░░░░░███
-14 ██░░░░████
-15 █████░████
-16 █████░████
-17 █████░████
-18 ██████████
-19 ██████████
-```
-
-### 2. Solution Finding Strategy (Attempted)
-**File:** `find_final_pieces.js` (created during session, not used)
-
-**Approach:** Brute-force search for optimal 4-piece finale
-- **Search space:** 7 types × 4 rotations × 10 positions = 280 possibilities per piece
-- **Goal:** Maximize line clears in final 4 pieces
-- **Constraint:** Must fit without collision given existing board state
-- **Result:** User specified positions manually (faster than computation)
-
-### 3. Collision Detection Algorithm
+### 1. Collision Detection Algorithm
 ```javascript
 function isValidPosition(piece, x, y) {
   const shape = SHAPES[piece.type][piece.rotation];
@@ -412,7 +336,7 @@ function isValidPosition(piece, x, y) {
 - **Collision checks:** Tests against locked pieces on board
 - **Spawn zone handling:** Allows negative Y for piece entry
 
-### 4. Gravity & Line Clear Mechanics
+### 2. Gravity & Line Clear Mechanics
 **Line Detection:**
 ```javascript
 const linesToClear = [];
@@ -437,8 +361,7 @@ linesToClear.forEach(y => {
 ## Project Statistics
 
 ### Code Metrics
-- **Total lines:** 1217 (index.html)
-- **Validation script:** 279 lines (validate_solution.js)
+- **Total lines:** 1,348 (index.html)
 - **Components:**
   - Configuration: 5 lines
   - Tetromino shapes: 135 lines (7 types × 4 rotations)
@@ -619,19 +542,18 @@ const cellSize = Math.floor(vh / 20);  // Fit to 80% of viewport height
 
 ### Making Changes
 1. **Edit `index.html`** — Change SCRIPT, CONFIG, or game logic
-2. **Validate:** Run `node validate_solution.js`
-3. **Test locally:** Open `index.html` in browser
-4. **Verify all sections:** Watch complete playthrough
-5. **Check console:** No errors or warnings
-6. **Test controls:** Space (pause), R (retry)
-7. **Commit:** Git add, commit with descriptive message
-8. **Push:** Deploy to GitHub Pages
+2. **Test locally:** Open `index.html` in browser
+3. **Verify all sections:** Watch complete playthrough
+4. **Check console:** No errors or warnings
+5. **Test controls:** Space (pause), R (retry)
+6. **Commit:** Git add, commit with descriptive message
+7. **Push:** Deploy to GitHub Pages
 
 ### Testing Checklist
 - [ ] All 41 pieces drop without collision
 - [ ] Section messages appear at correct times (pieces 1, 11, 20, 29)
 - [ ] Lines clear when complete (10 total expected)
-- [ ] Final message "Keep Propelling" displays
+- [ ] Final message "Let's Keep Propelling!" displays
 - [ ] Scoreboard shows with correct stats
 - [ ] Music plays on start (after user interaction)
 - [ ] Music stops when scoreboard appears
@@ -641,14 +563,11 @@ const cellSize = Math.floor(vh / 20);  // Fit to 80% of viewport height
 
 ### Git Workflow
 ```bash
-# Validate changes
-node validate_solution.js
-
 # Test locally
 open index.html
 
 # Stage changes
-git add index.html validate_solution.js
+git add index.html
 
 # Commit with message
 git commit -m "Description of changes"
