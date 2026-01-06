@@ -295,7 +295,7 @@ For development history, see agent.md
         width: auto !important;
         height: auto !important;
         object-fit: contain;
-        border: 3px solid #80ecba;
+        border: none;
         touch-action: none;
         cursor: pointer;
       }
@@ -338,7 +338,7 @@ For development history, see agent.md
       }
       
       canvas {
-        border: 2px solid #80ecba;
+        border: none;
       }
       
       .scoreboard {
@@ -1258,6 +1258,12 @@ For development history, see agent.md
     function showScoreboard() {
       gameState = "ended";
       pauseAudio(); // Stop the music when game ends
+      
+      // Remove border on mobile when showing scoreboard
+      if (window.innerWidth <= 768) {
+        document.getElementById("canvas").style.border = "none";
+      }
+      
       const overlay = document.getElementById("overlay");
       overlay.innerHTML = `
         <div class="scoreboard">
@@ -1391,6 +1397,12 @@ For development history, see agent.md
       gameState = "playing";
       document.getElementById("overlay").classList.remove("active");
       resetGame();
+      
+      // Add teal border on mobile when game starts
+      const canvas = document.getElementById("canvas");
+      if (window.innerWidth <= 768) {
+        canvas.style.border = window.innerWidth <= 480 ? "2px solid #80ecba" : "3px solid #80ecba";
+      }
       
       // Request wake lock to prevent screen from sleeping
       requestWakeLock();
