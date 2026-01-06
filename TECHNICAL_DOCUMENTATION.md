@@ -15,10 +15,11 @@ Built as a creative response to Propelland's application challenge: demonstrate 
 **Pivot to Current Implementation:**
 - Changed from cascade-clear to progressive gameplay
 - 41 pieces divided into 5 sections showing journey and values
-- Section-based messaging system with labels: MY PERSONALITY, MY SKILLS, MY WORK ETHIC, I AM A...
+- Section messages (brief popups): "Propelland's Principles", "Good Vibes Only", "I Build Things", "How I Work", "I AM A..."
+- HUD labels (persistent sidebar): "PROPELLAND'S PRINCIPLES", "MY PERSONALITY", "MY SKILLS", "MY WORK ETHIC", "I AM A..."
 - Final section adds "THINKER, MAKER, HACKER, LEARNER" as puzzle pieces
 - Note: Methodical, Simplicity, and Precision are skills in Section 2 (pieces 21, 25, 26)
-- Ends with line clear cascade (1 line) and "Keep Propelling" message
+- Ends with line clear cascade (1 line) and "Let's Keep Propelling!" message
 - **Success:** Playable, elegant, demonstrates strategic thinking
 
 ### The "Why" Behind Design Decisions
@@ -52,16 +53,15 @@ Built as a creative response to Propelland's application challenge: demonstrate 
 
 ### System Components
 
-#### 1. Game Configuration (`CONFIG` object, lines 207-211)
+#### 1. Game Configuration (`CONFIG` object, lines 287-295)
 ```javascript
 const CONFIG = {
-  SECTION_MESSAGES: {
-    0: "Propelland's 10 Principles",
-    1: "Good vibes only",
-    2: "I build things",
-    3: "My Work Ethic"
-  },
-  FINAL_MESSAGE: "Keep Propelling",
+  SECTION0_MESSAGE: "Propelland's Principles",
+  SECTION1_MESSAGE: "Good Vibes Only",
+  SECTION2_MESSAGE: "I Build Things",
+  SECTION3_MESSAGE: "How I Work",
+  SECTION4_MESSAGE: "I AM A...",
+  FINAL_MESSAGE: "Let's Keep Propelling!",
   MESSAGE_DURATION_MS: 2000
 }
 ```
@@ -451,7 +451,9 @@ linesToClear.forEach(y => {
 
 ### Game Statistics (Final Solution)
 - **Total pieces:** 41
-- **Sections:** 5 (sections 0-4 with labels: MY PERSONALITY, MY SKILLS, MY WORK ETHIC, and finale "I AM A...")
+- **Sections:** 5 (sections 0-4)
+  - Section messages: "Propelland's Principles", "Good Vibes Only", "I Build Things", "How I Work", "I AM A..."
+  - HUD labels: "PROPELLAND'S PRINCIPLES", "MY PERSONALITY", "MY SKILLS", "MY WORK ETHIC", "I AM A..."
 - **Lines cleared:** 10 total
   - Piece 37 (Reliable): 1 line
   - Piece 41 (LEARNER): 1 line
