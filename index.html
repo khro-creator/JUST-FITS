@@ -1532,6 +1532,24 @@ For development history, see agent.md
       let time = audioContext.currentTime;
       
       function playLoop() {
+        // Don't start a new loop if context is suspended/closed (but allow 'running' state)
+        if (!audioContext || audioContext.state === 'closed') {
+          console.log('AudioContext closed, stopping music loop');
+          musicLoopTimeout = null;
+          return;
+        }
+        
+        // If context is suspended, don't create new oscillators yet
+        // The loop will resume when context is resumed
+        if (audioContext.state === 'suspended') {
+          console.log('AudioContext suspended, pausing loop');
+          musicLoopTimeout = null;
+          return;
+        }
+        
+        // Update time to current context time for this loop iteration
+        time = audioContext.currentTime;
+        
         // Clear old oscillators
         activeOscillators = [];
         
@@ -1559,6 +1577,7 @@ For development history, see agent.md
         });
         
         const loopDuration = melody.reduce((sum, { duration }) => sum + duration, 0);
+        // Schedule next loop iteration
         musicLoopTimeout = setTimeout(playLoop, loopDuration * 1000);
       }
       
@@ -1578,9 +1597,13 @@ For development history, see agent.md
     function resumeAudio() {
       if (audioContext && audioContext.state === "suspended") {
         console.log('Resuming audio - resuming AudioContext');
-        audioContext.resume();
-        // Don't call startMusic() - the AudioContext resume will
-        // continue playing the scheduled oscillators from where they left off
+        audioContext.resume().then(() => {
+          // Restart music loop since it stopped when context was suspended
+          if (musicStarted && !musicLoopTimeout) {
+            console.log('Restarting music loop after resume');
+            startMusic();
+          }
+        });
       }
     }
     
