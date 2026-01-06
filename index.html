@@ -642,10 +642,8 @@ For development history, see agent.md
             e.preventDefault();
           }
         }, { passive: false });
-      } else {
-        // Desktop: allow click as well
-        canvas.addEventListener("click", handleMobileTap);
       }
+      // Desktop: spacebar only (no mouse clicks)
       
       console.log("✓ Game initialized");
     }
