@@ -557,9 +557,15 @@ const cellSize = Math.floor(vh / 20);  // Fit to 80% of viewport height
 - [ ] Scoreboard shows with correct stats
 - [ ] Music plays on start (after user interaction)
 - [ ] Music stops when scoreboard appears
-- [ ] Pause/Resume works (Space key)
-- [ ] Retry works (R key)
+- [ ] Pause/Resume works (Space key on desktop, tap on mobile)
+- [ ] Retry works (R key on desktop, button on mobile)
 - [ ] No console errors
+- [ ] **Mobile: Touch controls work (tap to start/pause/resume)**
+- [ ] **Mobile: Canvas fully visible on small screens (iPhone, Android)**
+- [ ] **Mobile: Wake Lock keeps screen on during gameplay**
+- [ ] **Mobile: No music layering when pausing/resuming**
+- [ ] **Mobile: Retry button starts game immediately**
+- [ ] **Mobile: Works in portrait and landscape**
 
 ### Git Workflow
 ```bash
@@ -579,10 +585,12 @@ git push origin main
 ## Technologies Used
 
 ### Core Stack
-- **HTML5 Canvas** — 2D graphics rendering
+- **HTML5 Canvas** — 2D graphics rendering with devicePixelRatio scaling
 - **Vanilla JavaScript (ES6)** — Game logic, no frameworks
-- **Web Audio API** — Procedural music synthesis
-- **CSS Grid/Flexbox** — Responsive layout
+- **Web Audio API** — Procedural music synthesis with oscillators
+- **Wake Lock API** — Screen sleep prevention during gameplay
+- **Touch Events API** — Mobile tap/touch gesture handling
+- **CSS Grid/Flexbox** — Responsive layout with media queries
 - **Git/GitHub Pages** — Version control and hosting
 
 ### Development Tools
@@ -595,6 +603,148 @@ git push origin main
 - **Tetris Guideline (2009)** — Official game specifications
 - **SRS (Super Rotation System)** — Standardized piece rotations
 - **Korobeiniki** — Traditional Tetris music (public domain)
+
+## Mobile & Responsive Features
+
+### Touch Controls
+- **Tap to Start:** Single tap on overlay starts the game
+- **Tap to Pause/Resume:** Tap anywhere on canvas during gameplay
+- **Touch Feedback:** Visual opacity flash on tap for user confirmation
+- **Retry Button:** Touch-optimized with both click and touchend handlers
+- **Event Handling:** Uses touchend for better mobile responsiveness, prevents double-firing
+
+### Responsive Canvas Sizing
+```javascript
+const isMobile = window.innerWidth <= 768;
+if (isMobile) {
+  const padding = 80; // 40px each side for full visibility
+  const viewportWidth = window.innerWidth - padding;
+  const viewportHeight = window.innerHeight - padding;
+  const scaleFactor = Math.min(
+    viewportWidth / baseWidth,
+    viewportHeight / baseHeight,
+    1
+  );
+  width = Math.floor(baseWidth * scaleFactor);
+  height = Math.floor(baseHeight * scaleFactor);
+}
+```
+- **Adaptive Scaling:** Canvas scales to fit viewport while maintaining aspect ratio
+- **Padding Management:** 80px total padding prevents border cutoff on small screens
+- **Device Support:** Tested on iPhone 13 mini, iPad, Android devices
+- **Orientation:** Supports portrait and landscape modes
+
+### Audio Management for Mobile
+```javascript
+// Create AudioContext on user gesture (iOS requirement)
+overlay.addEventListener("touchend", () => {
+  if (!audioContext) {
+    audioContext = new AudioContext();
+  }
+  startGame();
+});
+
+// Prevent music layering on pause/resume
+function pauseAudio() {
+  if (audioContext.state === "running") {
+    audioContext.suspend(); // Pauses all scheduled audio
+  }
+}
+
+function resumeAudio() {
+  if (audioContext.state === "suspended") {
+    audioContext.resume(); // Continues from pause point
+  }
+}
+```
+- **iOS Compatibility:** AudioContext created in user gesture handler
+- **No Layering:** Proper suspend/resume prevents multiple music loops
+- **State Management:** Checks context state before operations
+- **Retry Handling:** Stops all oscillators and clears timeouts before restart
+
+### Wake Lock API Integration
+```javascript
+let wakeLock = null;
+
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    wakeLock = await navigator.wakeLock.request('screen');
+    console.log('Screen will stay on during gameplay');
+  }
+}
+
+// Auto-release when page hidden, re-acquire when visible
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden' && wakeLock) {
+    releaseWakeLock();
+  } else if (document.visibilityState === 'visible' && gameState === 'playing') {
+    requestWakeLock();
+  }
+});
+```
+- **Screen Prevention:** Keeps screen active during autoplay viewing
+- **Battery Conscious:** Releases lock when page hidden or game paused
+- **Browser Support:** Safari 16.4+, Chrome, Edge (graceful degradation)
+- **User Experience:** Critical for uninterrupted mobile viewing
+
+### Timing & Animation Fixes
+```javascript
+function gameLoop(time = 0) {
+  const deltaTime = time - lastTime;
+  
+  // Handle large time jumps (retry, tab switching, first frame)
+  if (deltaTime > 1000 || lastTime === 0) {
+    lastTime = time;
+    render();
+    requestAnimationFrame(gameLoop);
+    return;
+  }
+  // ... continue with normal update
+}
+```
+- **Retry Fix:** Resets lastTime to 0, gameLoop handles timing restart
+- **Tab Switching:** Prevents huge deltaTime causing pieces to fall instantly
+- **First Frame:** Properly initializes timing on game start
+- **requestAnimationFrame:** Uses high-resolution timestamp for accurate timing
+
+### Text Rendering Optimization
+```javascript
+const hudCenterX = Math.round(boardWidth + (CONFIG.HUD_WIDTH / 2));
+ctx.imageSmoothingEnabled = true;
+```
+- **Integer Coordinates:** Math.round() ensures crisp text rendering on desktop
+- **Sub-pixel Fix:** Prevents blurry or clipped text (especially "A" and "T")
+- **Image Smoothing:** Enabled for better text quality
+- **Cross-platform:** Works consistently on all devices and browsers
+
+### Mobile-Specific CSS
+```css
+@media (max-width: 768px) {
+  body {
+    position: fixed;
+    width: 100vw;
+    height: 100svh; /* Small viewport height for iOS */
+    overflow: hidden;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+  
+  canvas {
+    max-width: 100vw;
+    max-height: 100svh;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    touch-action: none;
+    border: none;
+  }
+}
+```
+- **Fixed Positioning:** Prevents scroll issues on mobile browsers
+- **100svh:** Uses small viewport height to account for browser UI
+- **Touch Optimizations:** Prevents text selection, callouts, tap highlights
+- **Object-fit Contain:** Maintains aspect ratio while filling available space
 
 ## Performance Considerations
 

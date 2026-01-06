@@ -36,8 +36,17 @@ This implementation follows the official **Tetris Guideline** (standardized by T
 ## Run
 - **GitHub Pages:** [https://khro-creator.github.io/JUST-FITS/](https://khro-creator.github.io/JUST-FITS/)
 - **Local (Mac):** download and double-click `index.html`
+
+**Desktop Controls:**
 - Press **Start** (or **Space**) to begin (music starts after the first gesture due to browser rules)
 - **R** = Retry, **Space** = Pause/Resume
+
+**Mobile/Tablet Controls:**
+- **Tap anywhere** to start the game
+- **Tap during gameplay** to pause/resume
+- **Tap retry button** on scoreboard to restart
+- Works on all touch devices (iPhone, iPad, Android)
+- Screen stays awake during gameplay (Wake Lock API)
 
 ## Project Statistics
 - **Total pieces:** 41 (across 5 sections: 0-4)
@@ -54,7 +63,11 @@ This implementation follows the official **Tetris Guideline** (standardized by T
 - **Smart text rendering** — labels centered on entire piece shape, not per-cell
 - **Validation system** — 279-line Node.js script pre-validates all 41 pieces before commit
 - **Section messaging** — Narrative guides viewer through 5-section structure
-- **Responsive canvas** — Retina-ready with proper pixel scaling (38px cells)
+- **Responsive canvas** — Retina-ready with proper pixel scaling, adapts to mobile/tablet/desktop
+- **Touch controls** — Full touch support for mobile devices with visual feedback
+- **Wake Lock API** — Prevents screen from sleeping during gameplay on mobile
+- **Smart audio handling** — No music layering, proper pause/resume on all devices
+- **Cross-platform** — Works seamlessly on iPhone, iPad, Android, desktop browsers
 
 ## Files
 - **index.html** — Complete game implementation
