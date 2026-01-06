@@ -83,8 +83,8 @@ const PERSONALITY_POOL = [
 ];
 
 const MAKER_POOL = [
-  "Creative", "Visionary", "Thinker", "Innovator", "Techie",
-  "Investigator", "Hacker", "Lifelong-Learner", "Builder"
+  "Creative", "Visionary", "Methodical", "Innovator", "Techie",
+  "Investigator", "Simplicity", "Precision", "Builder"
 ];
 
 const WORK_ETHIC_POOL = [

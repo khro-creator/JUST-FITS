@@ -39,7 +39,7 @@ KEY COMPONENTS:
 SECTIONS:
 - Section 0 (Pieces 1-10): Propelland's 10 Principles
 - Section 1 (Pieces 11-19): Good vibes only (Personality)
-- Section 2 (Pieces 20-28): I build things (Maker Skills)
+- Section 2 (Pieces 20-28): I build things (My Skills)
 - Section 3 (Pieces 29-37): My Work Ethic
 - Section 4 (Pieces 38-41): THINKER, MAKER, HACKER, LEARNER finale
 
@@ -283,14 +283,15 @@ For development history, see agent.md
       MESSAGE_DURATION_MS: 2000,
       CASCADE_DELAY_MS: 800,
       
-      SECTION0_MESSAGE: "These are Propelland's 10 Principles",  // Propelland Principles
-      SECTION1_MESSAGE: "Good vibes only",      // Personality
-      SECTION2_MESSAGE: "I build things",       // Maker
-      SECTION3_MESSAGE: "My Work Ethic",        // Work Ethic
-      FINAL_MESSAGE: "Keep Propelling",         // Final message after all pieces
+      SECTION0_MESSAGE: "Propelland's Principles",  // Propelland Principles
+      SECTION1_MESSAGE: "Good Vibes Only",      // Personality
+      SECTION2_MESSAGE: "I Build Things",       // Skills
+      SECTION3_MESSAGE: "How I Work",           // Work Ethic
+      SECTION4_MESSAGE: "I AM A...",            // Finale
+      FINAL_MESSAGE: "Let's Keep Propelling!",  // Final message after all pieces
       
       TITLE: "Creative Technologist",
-      NAME: "Rocio Hernandez Rodriguez",
+      NAME: "Rocío Hernández Rodríguez",
       RESULT: "<em>Ideas made real — fast, clean, reliable.</em>",
       
       SCORE_SINGLE: 100,
@@ -387,8 +388,8 @@ For development history, see agent.md
     
     // ============================================================================
     // PERFECT CLEAR SCRIPT - 10 pieces × 4 blocks = 40 blocks = 4 complete rows
-    // Each piece represents one of Propelland's 10 core principles
-    // As lines clear, messages show how I embody each principle
+    // Each piece represents one of Propelland's 10 core principles, personality, skills, work ethic
+    // As lines and above sections clear, messages show how I embody each section
     // ============================================================================
     
     const SCRIPT = [
@@ -413,12 +414,12 @@ For development history, see agent.md
       { type: "T", rotation: 2, x: 0, label: "Passionate", section: 1, lineMessage: 18 },
       { type: "O", rotation: 0, x: 4, label: "Creative", section: 2, lineMessage: 19 },
       { type: "Z", rotation: 0, x: 2, label: "Visionary", section: 2, lineMessage: 20 },
-      { type: "T", rotation: 0, x: 7, label: "Thinker", section: 2, lineMessage: 21 },
+      { type: "T", rotation: 0, x: 7, label: "Methodical", section: 2, lineMessage: 21 },
       { type: "S", rotation: 0, x: 0, label: "Innovator", section: 2, lineMessage: 22 },
       { type: "L", rotation: 2, x: 4, label: "Techie", section: 2, lineMessage: 23 },
       { type: "J", rotation: 2, x: 7, label: "Investigator", section: 2, lineMessage: 24 },
-      { type: "O", rotation: 0, x: 4, label: "Hacker", section: 2, lineMessage: 25 },
-      { type: "S", rotation: 0, x: 2, label: "Lifelong-Learner", section: 2, lineMessage: 26 },
+      { type: "O", rotation: 0, x: 4, label: "Simplicity", section: 2, lineMessage: 25 },
+      { type: "S", rotation: 0, x: 2, label: "Precision", section: 2, lineMessage: 26 },
       { type: "Z", rotation: 0, x: 7, label: "Builder", section: 2, lineMessage: 27 },
       { type: "T", rotation: 2, x: 0, label: "Discipline", section: 3, lineMessage: 28 },
       { type: "J", rotation: 2, x: 7, label: "Determined", section: 3, lineMessage: 29 },
@@ -463,6 +464,8 @@ For development history, see agent.md
     let musicLoopTimeout = null;
     let rotationTimer = 0;
     let rotationInterval = 800; // Rotate every 800ms
+    let principleMessageIndex = 0;
+    let showingPrincipleMessages = false;
     
     // ============================================================================
     // INITIALIZATION
@@ -512,6 +515,8 @@ For development history, see agent.md
       cascading = false;
       cascadeTimer = 0;
       clearedSections = new Set();
+      principleMessageIndex = 0;
+      showingPrincipleMessages = false;
       gameState = "playing";
       spawnNextPiece();
     }
@@ -584,6 +589,8 @@ For development history, see agent.md
           showMessage(CONFIG.SECTION2_MESSAGE);
         } else if (currentSection === 3) {
           showMessage(CONFIG.SECTION3_MESSAGE);
+        } else if (currentSection === 4) {
+          showMessage(CONFIG.SECTION4_MESSAGE);
         }
       }
       
@@ -1049,17 +1056,17 @@ For development history, see agent.md
       ctx.font = "bold 13px sans-serif";
       y += 30;
       if (currentSection === 0) {
-        ctx.fillText("PROPELLAND", hudX + hudWidth / 2, y);
+        ctx.fillText("PROPELLAND'S", hudX + hudWidth / 2, y);
         y += 15;
         ctx.fillText("PRINCIPLES", hudX + hudWidth / 2, y);
       } else if (currentSection === 1) {
-        ctx.fillText("PERSONALITY", hudX + hudWidth / 2, y);
+        ctx.fillText("MY PERSONALITY", hudX + hudWidth / 2, y);
       } else if (currentSection === 2) {
-        ctx.fillText("MAKER", hudX + hudWidth / 2, y);
+        ctx.fillText("MY SKILLS", hudX + hudWidth / 2, y);
       } else if (currentSection === 3) {
-        ctx.fillText("WORK ETHIC", hudX + hudWidth / 2, y);
+        ctx.fillText("MY WORK ETHIC", hudX + hudWidth / 2, y);
       } else if (currentSection === 4) {
-        ctx.fillText("FINAL", hudX + hudWidth / 2, y);
+        ctx.fillText("I AM A...", hudX + hudWidth / 2, y);
       }
     }
     
@@ -1300,10 +1307,10 @@ For development history, see agent.md
     
     // Test 1: Verify exact label usage
     const scriptLabels = SCRIPT.map(s => s.label);
-    const allRequiredLabels = [...PERSONALITY_LABELS, ...MAKER_LABELS, ...WORK_ETHIC_LABELS];
+    // Note: Label pool arrays (PERSONALITY_LABELS, SKILLS_LABELS, WORK_ETHIC_LABELS) 
+    // are not defined separately - labels are embedded directly in SCRIPT array
     
     console.log("Test 1: Label verification");
-    console.log("  Required labels:", allRequiredLabels.length);
     console.log("  Script labels:", scriptLabels.length);
     
     const unusedLabels = allRequiredLabels.filter(label => !scriptLabels.includes(label));
@@ -1320,7 +1327,7 @@ For development history, see agent.md
     
     console.log("Test 2: Section distribution");
     console.log(`  Section 1 (Personality): ${section1Count} pieces`);
-    console.log(`  Section 2 (Maker): ${section2Count} pieces`);
+    console.log(`  Section 2 (Skills): ${section2Count} pieces`);
     console.log(`  Section 3 (Work Ethic): ${section3Count} pieces`);
     console.log(`  Total: ${SCRIPT.length} pieces (41 total including LEARNER)`);
     
