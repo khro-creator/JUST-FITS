@@ -27,7 +27,7 @@ const WORK_ETHIC_POOL = [
   "Human-centered", "Challenge-Driven", "Adaptability", "Problem-Solving", "Reliable"
 ];
 
-const FINALE = ["THINKER", "MAKER", "HACKER"];
+const FINALE = ["THINKER", "MAKER", "HACKER", "LEARNER"];
 
 const ROTATIONS = {
   I: [
@@ -140,7 +140,7 @@ function countBlocks(board) {
   return count;
 }
 
-function scorePlacement(board, type, rotation, x) {
+function scorePlacement(board, type, rotation, x, isLastThree = false) {
   const testBoard = board.map(row => [...row]);
   placePiece(testBoard, type, rotation, x);
   
@@ -150,6 +150,15 @@ function scorePlacement(board, type, rotation, x) {
   
   let score = 0;
   
+  // For last 3 pieces, strongly prioritize clearing lines
+  if (isLastThree) {
+    if (lines.length > 0) {
+      score += lines.length * 100000000; // Huge bonus for clearing
+    } else {
+      score -= 50000000; // Huge penalty for not clearing
+    }
+  }
+  
   if (height > 12) {
     score -= height * 1000000;
   } else if (height > 8) {
@@ -158,7 +167,7 @@ function scorePlacement(board, type, rotation, x) {
     score += (8 - height) * 1000;
   }
   
-  if (lines.length > 0) {
+  if (lines.length > 0 && !isLastThree) {
     score += lines.length * 5000000;
   }
   
@@ -168,7 +177,7 @@ function scorePlacement(board, type, rotation, x) {
   return { score, lines: lines.length, height, blocks };
 }
 
-function findBestMove(board, type, usageCount) {
+function findBestMove(board, type, usageCount, isLastThree = false) {
   let best = null;
   const rotations = ROTATIONS[type].length;
   
@@ -176,7 +185,7 @@ function findBestMove(board, type, usageCount) {
     // Check valid x range for this specific rotation
     for (let x = 0; x <= 10; x++) {
       if (canPlace(board, type, r, x, 0)) {
-        const result = scorePlacement(board, type, r, x);
+        const result = scorePlacement(board, type, r, x, isLastThree);
         const diversityPenalty = usageCount[type] * 100000;
         result.score -= diversityPenalty;
         
@@ -202,12 +211,12 @@ const allLabels = [
 ];
 
 console.log(`\n${'='.repeat(70)}`);
-console.log(`Generating 40-piece solution:`);
+console.log(`Generating 41-piece solution:`);
 console.log(`  Section 0: 10 Propelland Principles`);
 console.log(`  Section 1: 9 Personality traits`);
 console.log(`  Section 2: 9 Maker skills`);
 console.log(`  Section 3: 9 Work Ethic attributes`);
-console.log(`  Section 4: 3 Final words (THINKER, MAKER, HACKER)`);
+console.log(`  Section 4: 4 Final words (THINKER, MAKER, HACKER, LEARNER)`);
 console.log(`${'='.repeat(70)}\n`);
 
 const pieceTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
@@ -215,14 +224,15 @@ const usageCount = { I:0, O:0, T:0, L:0, J:0, S:0, Z:0 };
 let totalLinesCleared = 0;
 let maxHeight = 0;
 
-for (let i = 0; i < 40; i++) {
+for (let i = 0; i < 41; i++) {
   const { label, section } = allLabels[i];
+  const isLastFour = i >= 37; // Final 4 pieces should prioritize clearing
   
   let bestType = null;
   let bestMove = null;
   
   for (const type of pieceTypes) {
-    const move = findBestMove(board, type, usageCount);
+    const move = findBestMove(board, type, usageCount, isLastFour);
     if (move && (!bestMove || move.score > bestMove.score)) {
       bestType = type;
       bestMove = move;
@@ -230,7 +240,7 @@ for (let i = 0; i < 40; i++) {
   }
   
   if (!bestMove) {
-    console.log(`❌ Failed at piece ${i + 1}/40`);
+    console.log(`❌ Failed at piece ${i + 1}/41`);
     process.exit(1);
   }
   

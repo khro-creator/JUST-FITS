@@ -1,5 +1,4 @@
-// Validation script to test if the generated solution actually works
-
+// Find optimal final 4 pieces that clear lines
 const SHAPES = {
   I: [
     [[0,0,0,0], [1,1,1,1], [0,0,0,0], [0,0,0,0]],
@@ -45,7 +44,8 @@ const SHAPES = {
   ]
 };
 
-const SCRIPT = [
+// First 37 pieces from validate_solution.js
+const FIRST_37 = [
   { type: "I", rotation: 0, x: 4, label: "Be Curious", section: 0, lineMessage: 0 },
   { type: "L", rotation: 2, x: 3, label: "Have Fun", section: 0, lineMessage: 1 },
   { type: "J", rotation: 2, x: 6, label: "Empower Others", section: 0, lineMessage: 2 },
@@ -82,14 +82,8 @@ const SCRIPT = [
   { type: "L", rotation: 2, x: 0, label: "Challenge-Driven", section: 3, lineMessage: 33 },
   { type: "O", rotation: 0, x: 7, label: "Adaptability", section: 3, lineMessage: 34 },
   { type: "Z", rotation: 1, x: 2, label: "Problem-Solving", section: 3, lineMessage: 35 },
-  { type: "S", rotation: 1, x: 5, label: "Reliable", section: 3, lineMessage: 36 },
-  { type: "I", rotation: 1, x: 3, label: "THINKER", section: 4, lineMessage: 37 },
-  // { type: "Z", rotation: 1, x: 6, label: "MAKER", section: 4, lineMessage: 38 },
-  { type: "T", rotation: 0, x: 7, label: "HACKER", section: 4, lineMessage: 39 },
-  { type: "L", rotation: 2, x: 0, label: "LEARNER", section: 4, lineMessage: 40 }
+  { type: "S", rotation: 1, x: 5, label: "Reliable", section: 3, lineMessage: 36 }
 ];
-
-console.log(`Testing with ${SCRIPT.length} pieces - LEARNER at x=3`);
 
 function createBoard() {
   return Array(20).fill(null).map(() => Array(10).fill(0));
@@ -101,16 +95,8 @@ function collision(board, shape, x, y) {
       if (shape[row][col]) {
         const boardX = x + col;
         const boardY = y + row;
-        
-        // Check bounds
-        if (boardX < 0 || boardX >= 10 || boardY >= 20) {
-          return true;
-        }
-        
-        // Check existing blocks (only if within bounds)
-        if (boardY >= 0 && board[boardY][boardX]) {
-          return true;
-        }
+        if (boardX < 0 || boardX >= 10 || boardY >= 20) return true;
+        if (boardY >= 0 && board[boardY][boardX]) return true;
       }
     }
   }
@@ -138,141 +124,144 @@ function clearLines(board) {
       board.splice(y, 1);
       board.unshift(Array(10).fill(0));
       linesCleared++;
-      y++; // Check same row again
+      y++;
     }
   }
   return linesCleared;
 }
 
-function getMaxHeight(board) {
-  for (let y = 0; y < 20; y++) {
-    if (board[y].some(cell => cell === 1)) {
-      return 20 - y;
-    }
+// Build board state after first 37 pieces
+console.log('Building board state after first 37 pieces...\n');
+const board = createBoard();
+let totalLinesCleared = 0;
+
+for (let i = 0; i < FIRST_37.length; i++) {
+  const move = FIRST_37[i];
+  const shape = SHAPES[move.type][move.rotation];
+  
+  let y = 0;
+  while (!collision(board, shape, move.x, y + 1)) {
+    y++;
   }
-  return 0;
+  
+  lockPiece(board, shape, move.x, y);
+  const linesCleared = clearLines(board);
+  totalLinesCleared += linesCleared;
 }
 
-function visualizeBoard(board, highlight = null) {
-  console.log('\n┌' + '──'.repeat(10) + '┐');
-  for (let y = 0; y < 20; y++) {
-    let row = '│';
-    for (let x = 0; x < 10; x++) {
-      if (highlight && y >= highlight.y && y < highlight.y + 4 && 
-          x >= highlight.x && x < highlight.x + 4) {
-        const shapeRow = y - highlight.y;
-        const shapeCol = x - highlight.x;
-        if (highlight.shape[shapeRow][shapeCol]) {
-          row += '██';
-          continue;
+console.log(`Board state after 37 pieces: ${totalLinesCleared} lines cleared\n`);
+
+// Visualize board
+console.log('Board state before Section 4:\n');
+console.log('┌' + '──'.repeat(10) + '┐');
+for (let y = 0; y < 20; y++) {
+  let row = '│';
+  for (let x = 0; x < 10; x++) {
+    row += board[y][x] ? '▓▓' : '  ';
+  }
+  row += '│';
+  console.log(row);
+}
+console.log('└' + '──'.repeat(10) + '┘\n');
+
+// Test all combinations of 4 pieces
+const pieceTypes = ['I', 'O', 'T', 'L', 'J', 'S', 'Z'];
+const labels = ['THINKER', 'MAKER', 'HACKER', 'LEARNER'];
+
+console.log('Searching for best final 4 pieces that maximize line clears...\n');
+
+let bestSolution = null;
+let maxClears = 0;
+
+// Try different combinations
+for (const t1 of pieceTypes) {
+  for (let r1 = 0; r1 < SHAPES[t1].length; r1++) {
+    for (let x1 = 0; x1 < 10; x1++) {
+      const testBoard1 = board.map(row => [...row]);
+      const shape1 = SHAPES[t1][r1];
+      
+      let y1 = 0;
+      while (!collision(testBoard1, shape1, x1, y1 + 1)) y1++;
+      if (collision(testBoard1, shape1, x1, y1)) continue;
+      
+      lockPiece(testBoard1, shape1, x1, y1);
+      const clears1 = clearLines(testBoard1);
+      
+      for (const t2 of pieceTypes) {
+        for (let r2 = 0; r2 < SHAPES[t2].length; r2++) {
+          for (let x2 = 0; x2 < 10; x2++) {
+            const testBoard2 = testBoard1.map(row => [...row]);
+            const shape2 = SHAPES[t2][r2];
+            
+            let y2 = 0;
+            while (!collision(testBoard2, shape2, x2, y2 + 1)) y2++;
+            if (collision(testBoard2, shape2, x2, y2)) continue;
+            
+            lockPiece(testBoard2, shape2, x2, y2);
+            const clears2 = clearLines(testBoard2);
+            
+            for (const t3 of pieceTypes) {
+              for (let r3 = 0; r3 < SHAPES[t3].length; r3++) {
+                for (let x3 = 0; x3 < 10; x3++) {
+                  const testBoard3 = testBoard2.map(row => [...row]);
+                  const shape3 = SHAPES[t3][r3];
+                  
+                  let y3 = 0;
+                  while (!collision(testBoard3, shape3, x3, y3 + 1)) y3++;
+                  if (collision(testBoard3, shape3, x3, y3)) continue;
+                  
+                  lockPiece(testBoard3, shape3, x3, y3);
+                  const clears3 = clearLines(testBoard3);
+                  
+                  for (const t4 of pieceTypes) {
+                    for (let r4 = 0; r4 < SHAPES[t4].length; r4++) {
+                      for (let x4 = 0; x4 < 10; x4++) {
+                        const testBoard4 = testBoard3.map(row => [...row]);
+                        const shape4 = SHAPES[t4][r4];
+                        
+                        let y4 = 0;
+                        while (!collision(testBoard4, shape4, x4, y4 + 1)) y4++;
+                        if (collision(testBoard4, shape4, x4, y4)) continue;
+                        
+                        lockPiece(testBoard4, shape4, x4, y4);
+                        const clears4 = clearLines(testBoard4);
+                        
+                        const totalClears = clears1 + clears2 + clears3 + clears4;
+                        
+                        if (totalClears > maxClears) {
+                          maxClears = totalClears;
+                          bestSolution = [
+                            { type: t1, rotation: r1, x: x1, label: labels[0], clears: clears1 },
+                            { type: t2, rotation: r2, x: x2, label: labels[1], clears: clears2 },
+                            { type: t3, rotation: r3, x: x3, label: labels[2], clears: clears3 },
+                            { type: t4, rotation: r4, x: x4, label: labels[3], clears: clears4 }
+                          ];
+                          console.log(`\n🎉 Found solution with ${totalClears} line clears!`);
+                          bestSolution.forEach((p, i) => {
+                            console.log(`  ${i+1}. ${p.label}: ${p.type} r${p.rotation} @x${p.x} (clears ${p.clears})`);
+                          });
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
-      row += board[y][x] ? '▓▓' : '  ';
     }
-    row += '│';
-    console.log(row);
-  }
-  console.log('└' + '──'.repeat(10) + '┘');
-}
-
-function validateSolution() {
-  console.log('🔍 Validating 40-piece solution...\n');
-  
-  const board = createBoard();
-  let totalLinesCleared = 0;
-  let errors = [];
-  
-  for (let i = 0; i < SCRIPT.length; i++) {
-    const move = SCRIPT[i];
-    const shape = SHAPES[move.type][move.rotation];
-    
-    console.log(`\n[${i + 1}/40] ${move.label} (${move.type}, rot=${move.rotation}, x=${move.x})`);
-    
-    // Find landing position
-    let y = 0;
-    while (!collision(board, shape, move.x, y + 1)) {
-      y++;
-    }
-    
-    // Check if piece can be placed
-    if (collision(board, shape, move.x, y)) {
-      errors.push({
-        piece: i + 1,
-        label: move.label,
-        type: move.type,
-        rotation: move.rotation,
-        x: move.x,
-        error: 'COLLISION - Piece cannot be placed!'
-      });
-      console.log(`❌ COLLISION at piece #${i + 1}! Cannot place ${move.type} at x=${move.x}, rotation=${move.rotation}`);
-      visualizeBoard(board, { shape, x: move.x, y });
-      break;
-    }
-    
-    // Lock the piece
-    lockPiece(board, shape, move.x, y);
-    
-    // Clear lines
-    const linesCleared = clearLines(board);
-    totalLinesCleared += linesCleared;
-    
-    const height = getMaxHeight(board);
-    console.log(`  Landed at y=${y}, cleared ${linesCleared} lines, height=${height}/20`);
-    
-    if (linesCleared > 0) {
-      console.log(`  ✨ Cleared ${linesCleared} line(s)! Total: ${totalLinesCleared}`);
-    }
-    
-    if (height > 18) {
-      errors.push({
-        piece: i + 1,
-        label: move.label,
-        error: `Height too high: ${height}/20 - approaching game over!`
-      });
-      console.log(`⚠️  WARNING: Height is ${height}/20`);
-    }
-  }
-  
-  console.log('\n' + '═'.repeat(60));
-  console.log('📊 VALIDATION RESULTS');
-  console.log('═'.repeat(60));
-  console.log(`Total pieces: ${SCRIPT.length}`);
-  console.log(`Total lines cleared: ${totalLinesCleared}`);
-  console.log(`Final height: ${getMaxHeight(board)}/20`);
-  console.log(`Errors found: ${errors.length}`);
-  
-  if (errors.length > 0) {
-    console.log('\n❌ VALIDATION FAILED\n');
-    errors.forEach(err => {
-      console.log(`Piece #${err.piece} (${err.label}):`, err.error);
-      if (err.type) {
-        console.log(`  Type: ${err.type}, Rotation: ${err.rotation}, X: ${err.x}`);
-      }
-    });
-    console.log('\n🔧 Final board state:');
-    visualizeBoard(board);
-    return false;
-  } else {
-    console.log('\n✅ VALIDATION PASSED');
-    console.log('All pieces placed successfully!');
-    console.log('\n📋 Final board state:');
-    visualizeBoard(board);
-    
-    // Check column coverage
-    const columnFills = Array(10).fill(0);
-    for (let y = 0; y < 20; y++) {
-      for (let x = 0; x < 10; x++) {
-        if (board[y][x]) columnFills[x]++;
-      }
-    }
-    console.log('\n📊 Column coverage:');
-    for (let x = 0; x < 10; x++) {
-      const bar = '█'.repeat(Math.ceil(columnFills[x] / 2));
-      console.log(`Col ${x}: ${bar} (${columnFills[x]} blocks)`);
-    }
-    
-    return true;
   }
 }
 
-validateSolution();
+console.log('\n' + '='.repeat(70));
+console.log('BEST SOLUTION FOR FINAL 4 PIECES:');
+console.log('='.repeat(70));
+console.log(`Total line clears in Section 4: ${maxClears}`);
+console.log();
+
+if (bestSolution) {
+  bestSolution.forEach((p, i) => {
+    console.log(`  { type: "${p.type}", rotation: ${p.rotation}, x: ${p.x}, label: "${p.label}", section: 4, lineMessage: ${37 + i} }${i < 3 ? ',' : ''}`);
+  });
+}

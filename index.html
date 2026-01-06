@@ -204,10 +204,11 @@
       MESSAGE_DURATION_MS: 2000,
       CASCADE_DELAY_MS: 800,
       
-      SECTION1_MESSAGE: "Good vibes only",      // Personality (clears last)
-      SECTION2_MESSAGE: "I build things",       // Maker (clears second)
-      SECTION3_MESSAGE: "My Work Ethic",        // Work Ethic (clears first)
-      FINALE_MESSAGE: "THINKER · MAKER · HACKER", // Company slogan
+      SECTION0_MESSAGE: "These are Propelland's 10 Principles",  // Propelland Principles
+      SECTION1_MESSAGE: "Good vibes only",      // Personality
+      SECTION2_MESSAGE: "I build things",       // Maker
+      SECTION3_MESSAGE: "My Work Ethic",        // Work Ethic
+      FINAL_MESSAGE: "Keep Propelling",         // Final message after all pieces
       
       TITLE: "Creative Technologist",
       SALARY: "Ro — €48,000–€58,000 (Madrid, base, flexible)",
@@ -349,9 +350,10 @@
       { type: "O", rotation: 0, x: 7, label: "Adaptability", section: 3, lineMessage: 34 },
       { type: "Z", rotation: 1, x: 2, label: "Problem-Solving", section: 3, lineMessage: 35 },
       { type: "S", rotation: 1, x: 5, label: "Reliable", section: 3, lineMessage: 36 },
-      { type: "T", rotation: 2, x: 1, label: "THINKER", section: 4, lineMessage: 37 },
-      { type: "J", rotation: 1, x: 4, label: "MAKER", section: 4, lineMessage: 38 },
-      { type: "O", rotation: 0, x: 6, label: "HACKER", section: 4, lineMessage: 39 }
+      { type: "I", rotation: 1, x: 3, label: "THINKER", section: 4, lineMessage: 37 },
+      // { type: "Z", rotation: 1, x: 6, label: "MAKER", section: 4, lineMessage: 38 },
+      { type: "T", rotation: 0, x: 7, label: "HACKER", section: 4, lineMessage: 39 },
+      { type: "L", rotation: 2, x: 0, label: "LEARNER", section: 4, lineMessage: 40 }
     ];
     
     // ============================================================================
@@ -367,7 +369,8 @@
     let linesCleared = 0;
     let score = 0;
     let level = 1;
-    let currentSection = 1;
+    let currentSection = 0;
+    let lastSection = -1;
     let dropCounter = 0;
     let lastTime = 0;
     let message = null;
@@ -419,7 +422,8 @@
       linesCleared = 0;
       score = 0;
       level = 1;
-      currentSection = 1;
+      currentSection = 0;
+      lastSection = -1;
       currentPiece = null;
       nextPiece = null;
       message = null;
@@ -489,6 +493,20 @@
       
       const entry = SCRIPT[scriptIndex];
       currentSection = entry.section;
+      
+      // Show message when entering a new section
+      if (currentSection !== lastSection) {
+        lastSection = currentSection;
+        if (currentSection === 0) {
+          showMessage(CONFIG.SECTION0_MESSAGE);
+        } else if (currentSection === 1) {
+          showMessage(CONFIG.SECTION1_MESSAGE);
+        } else if (currentSection === 2) {
+          showMessage(CONFIG.SECTION2_MESSAGE);
+        } else if (currentSection === 3) {
+          showMessage(CONFIG.SECTION3_MESSAGE);
+        }
+      }
       
       currentPiece = {
         type: entry.type,
@@ -584,14 +602,10 @@
           currentPiece = null;
           
           if (isLastPiece) {
-            // Show finale message, then check line clears
-            showMessage(CONFIG.FINALE_MESSAGE);
-            setTimeout(() => {
-              checkLineClears();
-            }, CONFIG.MESSAGE_DURATION_MS);
-          } else {
-            checkLineClears();
+            console.log("✓ Last piece placed! Game will end after clearing.");
           }
+          
+          checkLineClears();
         }
       }
     }
@@ -633,8 +647,8 @@
         
         level = Math.floor(linesCleared / 10) + 1;
         
-        // Check if any section is now fully cleared
-        for (const section of [1, 2, 3]) {
+        // Check if any section is now fully cleared (for tracking only)
+        for (const section of [0, 1, 2, 3]) {
           const sectionExists = board.some(row => 
             row.some(cell => cell && cell.section === section)
           );
@@ -642,14 +656,6 @@
           if (!sectionExists && !clearedSections.has(section)) {
             clearedSections.add(section);
             console.log(`✓ Section ${section} fully cleared!`);
-            
-            if (section === 1) {
-              showMessage(CONFIG.SECTION1_MESSAGE);
-            } else if (section === 2) {
-              showMessage(CONFIG.SECTION2_MESSAGE);
-            } else if (section === 3) {
-              showMessage(CONFIG.SECTION3_MESSAGE);
-            }
           }
         }
         
@@ -665,10 +671,16 @@
         console.log("Cascade continuing...");
         checkLineClears();
       } else {
-        const isEmpty = board.every(row => row.every(cell => cell === null));
-        if (isEmpty) {
-          console.log("✓ Board completely empty! Showing scoreboard");
-          setTimeout(() => showScoreboard(), 1000);
+        const isGameComplete = scriptIndex >= SCRIPT.length;
+        
+        if (isGameComplete) {
+          // Game is complete - show final message then scoreboard
+          console.log("✓ All pieces placed! Showing final message...");
+          showMessage(CONFIG.FINAL_MESSAGE);
+          setTimeout(() => {
+            console.log("✓ Showing scoreboard...");
+            showScoreboard();
+          }, CONFIG.MESSAGE_DURATION_MS);
         } else {
           console.log("Cascade complete, spawning next piece");
           spawnNextPiece();
@@ -914,12 +926,18 @@
       ctx.fillText("SECTION:", hudX, y);
       y += 20;
       ctx.font = "12px sans-serif";
-      if (currentSection === 1) {
+      if (currentSection === 0) {
+        ctx.fillText("PROPELLAND", hudX, y);
+        y += 15;
+        ctx.fillText("PRINCIPLES", hudX, y);
+      } else if (currentSection === 1) {
         ctx.fillText("PERSONALITY", hudX, y);
       } else if (currentSection === 2) {
         ctx.fillText("MAKER", hudX, y);
       } else if (currentSection === 3) {
         ctx.fillText("WORK ETHIC", hudX, y);
+      } else if (currentSection === 4) {
+        ctx.fillText("FINAL", hudX, y);
       }
     }
     
@@ -964,9 +982,11 @@
     // ============================================================================
     
     function handleKeyPress(e) {
+      console.log(`Key pressed: ${e.code}, gameState: ${gameState}`);
       if (e.code === "Space") {
         e.preventDefault();
         if (gameState === "title") {
+          console.log("Starting game from title screen...");
           startGame();
         } else if (gameState === "playing") {
           gameState = "paused";
@@ -1179,7 +1199,7 @@
     console.log(`  Section 1 (Personality): ${section1Count} pieces`);
     console.log(`  Section 2 (Maker): ${section2Count} pieces`);
     console.log(`  Section 3 (Work Ethic): ${section3Count} pieces`);
-    console.log(`  Total: ${SCRIPT.length} pieces`);
+    console.log(`  Total: ${SCRIPT.length} pieces (41 total including LEARNER)`);
     
     // Test 3: Key piece verification
     const keyPieces = SCRIPT.filter(s => s.isKey);
