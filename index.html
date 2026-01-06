@@ -100,7 +100,8 @@
     
     .scoreboard {
       background: #1a1a1a;
-      border: 4px solid #fff;
+      border: 4px solid #80ecba;
+      border-radius: 20px;
       padding: 40px;
       text-align: center;
       max-width: 500px;
@@ -109,14 +110,14 @@
     .scoreboard h1 {
       font-size: 32px;
       margin-bottom: 10px;
-      color: #FFD700;
+      color: #0f47f5;
       font-weight: 700;
     }
     
     .scoreboard h2 {
       font-size: 20px;
       margin-bottom: 30px;
-      color: #aaa;
+      color: #80ecba;
     }
     
     .scoreboard p {
@@ -150,13 +151,16 @@
     }
     
     button.primary {
-      background: #FFD700;
-      color: #000;
-      border-color: #FFD700;
+      background: #0f47f5;
+      color: #fff;
+      border-color: #0f47f5;
+      border-radius: 10px;
     }
     
     button.primary:hover {
-      background: #FFC700;
+      background: #80ecba;
+      color: #000;
+      border-color: #80ecba;
     }
     
     @media (max-width: 768px) {
@@ -211,8 +215,8 @@
       FINAL_MESSAGE: "Keep Propelling",         // Final message after all pieces
       
       TITLE: "Creative Technologist",
-      SALARY: "Ro — €48,000–€58,000 (Madrid, base, flexible)",
-      RESULT: "Result: Ideas made real — fast, clean, reliable.",
+      NAME: "Rocio Hernandez Rodriguez",
+      RESULT: "<em>Ideas made real — fast, clean, reliable.</em>",
       
       SCORE_SINGLE: 100,
       SCORE_DOUBLE: 300,
@@ -884,22 +888,34 @@
     }
     
     function drawHUD() {
-      const hudX = CONFIG.COLS * CONFIG.CELL_SIZE + 10;
-      let y = 10;
+      const hudX = CONFIG.COLS * CONFIG.CELL_SIZE + 20;
+      const hudWidth = CONFIG.HUD_WIDTH - 30;
+      let y = 20;
       
-      ctx.fillStyle = "#FFF";
-      ctx.font = "bold 20px sans-serif";
-      ctx.textAlign = "left";
+      // Title Section - centered
+      ctx.fillStyle = "#0f47f5";
+      ctx.font = "bold 18px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("JUST FITS", hudX + hudWidth / 2, y);
       
-      ctx.fillText("JUST FITS", hudX, y);
+      // Next Piece Section - bubbly card
+      y += 40;
+      ctx.fillStyle = "rgba(128, 236, 186, 0.1)";
+      ctx.beginPath();
+      ctx.roundRect(hudX - 10, y - 5, hudWidth, 95, 12);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(128, 236, 186, 0.3)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
       
-      y += 50;
-      ctx.font = "14px sans-serif";
-      ctx.fillText("NEXT:", hudX, y);
+      ctx.fillStyle = "#80ecba";
+      ctx.font = "12px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("NEXT", hudX + hudWidth / 2, y + 10);
       
       if (nextPiece) {
-        const previewX = hudX + 20;
-        const previewY = y + 10;
+        const previewX = hudX + hudWidth / 2 - 20;
+        const previewY = y + 25;
         const shape = nextPiece.shape;
         const palette = TETRIS_COLORS[nextPiece.type];
         
@@ -915,29 +931,60 @@
         }
       }
       
-      y += 100;
-      ctx.fillText(`LINES: ${linesCleared}`, hudX, y);
-      y += 25;
-      ctx.fillText(`SCORE: ${score}`, hudX, y);
-      y += 25;
-      ctx.fillText(`LEVEL: ${level}`, hudX, y);
+      // Stats Section - bubbly card
+      y += 110;
+      ctx.fillStyle = "rgba(15, 71, 245, 0.1)";
+      ctx.beginPath();
+      ctx.roundRect(hudX - 10, y - 5, hudWidth, 90, 12);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(15, 71, 245, 0.3)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
       
-      y += 50;
-      ctx.fillText("SECTION:", hudX, y);
-      y += 20;
+      ctx.fillStyle = "#0f47f5";
       ctx.font = "12px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("STATS", hudX + hudWidth / 2, y + 10);
+      
+      ctx.fillStyle = "#FFF";
+      ctx.font = "14px sans-serif";
+      y += 30;
+      ctx.fillText(`Lines: ${linesCleared}`, hudX + hudWidth / 2, y);
+      y += 20;
+      ctx.fillText(`Score: ${score}`, hudX + hudWidth / 2, y);
+      y += 20;
+      ctx.fillText(`Level: ${level}`, hudX + hudWidth / 2, y);
+      
+      // Section Info - bubbly card
+      y += 35;
+      ctx.fillStyle = "rgba(128, 236, 186, 0.1)";
+      ctx.beginPath();
+      ctx.roundRect(hudX - 10, y - 5, hudWidth, 65, 12);
+      ctx.fill();
+      ctx.strokeStyle = "rgba(128, 236, 186, 0.3)";
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      
+      ctx.fillStyle = "#80ecba";
+      ctx.font = "12px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("SECTION", hudX + hudWidth / 2, y + 10);
+      
+      ctx.fillStyle = "#FFF";
+      ctx.font = "bold 13px sans-serif";
+      y += 30;
       if (currentSection === 0) {
-        ctx.fillText("PROPELLAND", hudX, y);
+        ctx.fillText("PROPELLAND", hudX + hudWidth / 2, y);
         y += 15;
-        ctx.fillText("PRINCIPLES", hudX, y);
+        ctx.fillText("PRINCIPLES", hudX + hudWidth / 2, y);
       } else if (currentSection === 1) {
-        ctx.fillText("PERSONALITY", hudX, y);
+        ctx.fillText("PERSONALITY", hudX + hudWidth / 2, y);
       } else if (currentSection === 2) {
-        ctx.fillText("MAKER", hudX, y);
+        ctx.fillText("MAKER", hudX + hudWidth / 2, y);
       } else if (currentSection === 3) {
-        ctx.fillText("WORK ETHIC", hudX, y);
+        ctx.fillText("WORK ETHIC", hudX + hudWidth / 2, y);
       } else if (currentSection === 4) {
-        ctx.fillText("FINAL", hudX, y);
+        ctx.fillText("FINAL", hudX + hudWidth / 2, y);
       }
     }
     
@@ -968,7 +1015,7 @@
           <h1>${CONFIG.TITLE}</h1>
           <h2>Score Board</h2>
           <p><strong>Lines: ${linesCleared} | Score: ${score} | Level: ${level}</strong></p>
-          <p><strong>${CONFIG.SALARY}</strong></p>
+          <p><strong>${CONFIG.NAME}</strong></p>
           <p>${CONFIG.RESULT}</p>
           <div class="buttons">
             <button class="primary" onclick="retry()">RETRY</button>
