@@ -78,7 +78,7 @@ For development history, see agent.md
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>JUST FITS — A Perfect Fit Story</title>
   <style>
     * {
@@ -109,6 +109,8 @@ For development history, see agent.md
       background: #000;
       display: block;
       margin: 0 auto;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
     }
     
     #overlay {
@@ -255,28 +257,47 @@ For development history, see agent.md
     
     @media (max-width: 768px) {
       body {
-        overflow-x: hidden;
-        overflow-y: auto;
-        align-items: flex-start;
-        padding: 20px 10px 100px 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        overflow: hidden;
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        height: 100svh; /* Use small viewport height for better mobile support */
+        -webkit-tap-highlight-color: transparent;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+        position: fixed;
+        top: 0;
+        left: 0;
       }
       
       #container {
+        position: relative;
         width: 100%;
-        max-width: 100vw;
+        height: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
         padding: 0;
+        margin: 0;
+        touch-action: manipulation;
+        cursor: pointer;
       }
       
       canvas {
         width: 100% !important;
-        height: auto !important;
-        max-width: 100vw;
-        max-height: 100%;
+        height: 100% !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        max-height: 100svh !important;
         object-fit: contain;
-        border-width: 2px;
+        border: none;
+        touch-action: none;
+        cursor: pointer;
       }
       
       .big-title {
@@ -350,7 +371,7 @@ For development history, see agent.md
         <div class="footer">
           AUTOPLAY DEMO<br>
           <span class="desktop-instructions">SPACE = START • R = RETRY</span>
-          <span class="mobile-instructions">TAP = START, PAUSE, RESUME</span>
+          <span class="mobile-instructions">TAP = START • PAUSE • RESUME</span>
         </div>
       </div>
     </div>
@@ -574,18 +595,20 @@ For development history, see agent.md
       let height = baseHeight;
       
       if (isMobile) {
-        // Scale to fit mobile viewport with padding
-        const maxWidth = window.innerWidth - 20;
-        const maxHeight = window.innerHeight - 200; // Leave space for controls
-        const scaleToFit = Math.min(maxWidth / baseWidth, maxHeight / baseHeight, 1);
-        width = baseWidth * scaleToFit;
-        height = baseHeight * scaleToFit;
+        // On mobile, CSS will handle sizing with 100vw/100vh
+        // Just use full viewport dimensions
+        width = window.innerWidth;
+        height = window.innerHeight;
       }
       
       canvas.width = baseWidth * scale;
       canvas.height = baseHeight * scale;
-      canvas.style.width = width + "px";
-      canvas.style.height = height + "px";
+      
+      // On desktop, set explicit size. On mobile, CSS takes over
+      if (!isMobile) {
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+      }
       
       ctx.scale(scale, scale);
       
@@ -594,12 +617,24 @@ For development history, see agent.md
       document.addEventListener("keydown", handleKeyPress);
       
       const overlay = document.getElementById("overlay");
-      overlay.addEventListener("click", handleOverlayClick);
-      overlay.addEventListener("touchstart", handleOverlayClick, { passive: false });
+      const container = document.getElementById("container");
       
-      // Mobile touch handling - tap on canvas to pause/resume
-      if (window.innerWidth <= 768) {
-        canvas.addEventListener("touchstart", handleMobileTap, { passive: false });
+      // Handle overlay interactions (title screen)
+      overlay.addEventListener("click", handleOverlayClick);
+      overlay.addEventListener("touchend", handleOverlayClick, { passive: false });
+      
+      // Mobile/tablet touch handling - tap anywhere on container to pause/resume
+      const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+      if (isTouchDevice || window.innerWidth <= 1024) {
+        container.addEventListener("touchend", handleMobileTap, { passive: false });
+        // Prevent touchstart from interfering
+        container.addEventListener("touchstart", (e) => {
+          if (gameState !== "title" && gameState !== "gameover") {
+            e.preventDefault();
+          }
+        }, { passive: false });
+      } else {
+        // Desktop: allow click as well
         canvas.addEventListener("click", handleMobileTap);
       }
       
@@ -1212,11 +1247,21 @@ For development history, see agent.md
           <p><a href="mailto:roci42madrid@gmail.com" style="color: #80ecba; text-decoration: none;">roci42madrid@gmail.com</a></p>
           <p>${CONFIG.RESULT}</p>
           <div class="buttons">
-            <button class="primary" onclick="retry()">RETRY</button>
+            <button class="primary" id="retryBtn">RETRY</button>
           </div>
         </div>
       `;
       overlay.classList.add("active");
+      
+      // Add both click and touch handlers for retry button
+      const retryBtn = document.getElementById("retryBtn");
+      if (retryBtn) {
+        retryBtn.addEventListener("click", retry);
+        retryBtn.addEventListener("touchend", (e) => {
+          e.preventDefault();
+          retry();
+        }, { passive: false });
+      }
     }
     
     // ============================================================================
@@ -1264,9 +1309,22 @@ For development history, see agent.md
         return;
       }
       
-      // Prevent default on touch to avoid double-firing
-      if (e.type === 'touchstart') {
-        e.preventDefault();
+      // Prevent default behavior and propagation
+      e.preventDefault();
+      e.stopPropagation();
+      
+      // iOS requires AudioContext creation in user gesture
+      if (!audioContext) {
+        try {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          console.log('AudioContext created in overlay tap, state:', audioContext.state);
+          // Force resume if suspended
+          if (audioContext.state === 'suspended') {
+            audioContext.resume();
+          }
+        } catch (err) {
+          console.warn('Could not create AudioContext', err);
+        }
       }
       
       if (gameState === "title") {
@@ -1276,20 +1334,35 @@ For development history, see agent.md
     }
     
     function handleMobileTap(e) {
-      // Prevent default to avoid iOS quirks
-      if (e.type === 'touchstart') {
-        e.preventDefault();
+      // Don't handle if overlay is showing
+      const overlay = document.getElementById("overlay");
+      if (overlay.classList.contains('active')) {
+        return;
       }
+      
+      // Prevent default behavior and propagation
+      e.preventDefault();
+      e.stopPropagation();
       
       // Only handle taps during gameplay, not on title or gameover
       if (gameState === "playing") {
         gameState = "paused";
         pauseAudio();
         console.log("Game paused by tap");
+        
+        // Visual feedback
+        const canvas = document.getElementById("canvas");
+        canvas.style.opacity = '0.8';
+        setTimeout(() => { canvas.style.opacity = '1'; }, 150);
       } else if (gameState === "paused") {
         gameState = "playing";
         resumeAudio();
         console.log("Game resumed by tap");
+        
+        // Visual feedback
+        const canvas = document.getElementById("canvas");
+        canvas.style.opacity = '0.8';
+        setTimeout(() => { canvas.style.opacity = '1'; }, 150);
       }
     }
     
@@ -1335,10 +1408,35 @@ For development history, see agent.md
     }
     
     function retry() {
+      console.log('Retry - stopping music and restarting');
+      
+      // Fully stop all music
+      if (audioContext) {
+        // Stop all active oscillators
+        activeOscillators.forEach(osc => {
+          try { osc.stop(); } catch (e) {}
+        });
+        activeOscillators = [];
+        
+        // Clear loop timeout to stop the loop
+        if (musicLoopTimeout) {
+          clearTimeout(musicLoopTimeout);
+          musicLoopTimeout = null;
+        }
+      }
+      
       document.getElementById("overlay").classList.remove("active");
       resetGame();
       gameState = "playing";
-      resumeAudio();
+      
+      // Start fresh music
+      if (musicStarted && audioContext) {
+        if (audioContext.state === 'suspended') {
+          audioContext.resume().then(() => startMusic());
+        } else {
+          startMusic();
+        }
+      }
     }
     
     window.retry = retry;
@@ -1372,6 +1470,18 @@ For development history, see agent.md
     
     function startMusic() {
       if (!audioContext) return;
+      
+      // Clear any existing music loop to prevent layering
+      if (musicLoopTimeout) {
+        clearTimeout(musicLoopTimeout);
+        musicLoopTimeout = null;
+      }
+      
+      // Stop any active oscillators
+      activeOscillators.forEach(osc => {
+        try { osc.stop(); } catch (e) {}
+      });
+      activeOscillators = [];
       
       // Complete Korobeiniki (Tetris Theme) melody
       const melody = [
@@ -1457,29 +1567,20 @@ For development history, see agent.md
     
     function pauseAudio() {
       if (audioContext && audioContext.state === "running") {
+        console.log('Pausing audio - suspending AudioContext');
         audioContext.suspend();
-        
-        // Stop all active oscillators
-        activeOscillators.forEach(osc => {
-          try { osc.stop(); } catch (e) {}
-        });
-        activeOscillators = [];
-        
-        // Clear loop timeout
-        if (musicLoopTimeout) {
-          clearTimeout(musicLoopTimeout);
-          musicLoopTimeout = null;
-        }
+        // Don't clear musicLoopTimeout or stop oscillators
+        // AudioContext suspend will pause all scheduled audio
+        // When we resume, the same oscillators will continue
       }
     }
     
     function resumeAudio() {
       if (audioContext && audioContext.state === "suspended") {
+        console.log('Resuming audio - resuming AudioContext');
         audioContext.resume();
-        // Restart music loop after resuming
-        if (!musicLoopTimeout) {
-          startMusic();
-        }
+        // Don't call startMusic() - the AudioContext resume will
+        // continue playing the scheduled oscillators from where they left off
       }
     }
     
