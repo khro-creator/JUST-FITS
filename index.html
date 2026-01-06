@@ -594,14 +594,11 @@ For development history, see agent.md
       document.addEventListener("keydown", handleKeyPress);
       document.getElementById("overlay").addEventListener("click", handleOverlayClick);
       
-      // Touch/click handling for mobile - tap anywhere on container to start/pause
-      const container = document.getElementById("container");
-      container.addEventListener("click", handleContainerClick);
-      container.addEventListener("touchend", (e) => {
-        // Prevent double-firing on mobile
-        e.preventDefault();
-        handleContainerClick(e);
-      });
+      // Mobile touch handling - tap on canvas to pause/resume
+      if (window.innerWidth <= 768) {
+        canvas.addEventListener("touchstart", handleMobileTap, { passive: false });
+        canvas.addEventListener("click", handleMobileTap);
+      }
       
       console.log("✓ Game initialized");
     }
@@ -1263,18 +1260,13 @@ For development history, see agent.md
       }
     }
     
-    function handleContainerClick(e) {
-      // Only on mobile/tablet - don't interfere with desktop keyboard controls
-      if (window.innerWidth > 768) {
-        return;
+    function handleMobileTap(e) {
+      // Prevent default to avoid iOS quirks
+      if (e.type === 'touchstart') {
+        e.preventDefault();
       }
       
-      // Don't interfere with overlay clicks or scoreboard buttons
-      if (e.target.closest('#overlay') || e.target.closest('button')) {
-        return;
-      }
-      
-      // Tap anywhere on canvas/container to pause/resume during gameplay
+      // Only handle taps during gameplay, not on title or gameover
       if (gameState === "playing") {
         gameState = "paused";
         pauseAudio();
