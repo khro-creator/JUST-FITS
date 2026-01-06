@@ -1126,21 +1126,23 @@ For development history, see agent.md
     }
     
     function drawHUD() {
-      const hudX = CONFIG.COLS * CONFIG.CELL_SIZE + 20;
-      const hudWidth = CONFIG.HUD_WIDTH - 30;
+      const boardWidth = CONFIG.COLS * CONFIG.CELL_SIZE;
+      const hudX = boardWidth + 10; // Start 10px after board
+      const hudWidth = CONFIG.HUD_WIDTH - 20; // Total HUD width with padding
+      const hudCenterX = boardWidth + (CONFIG.HUD_WIDTH / 2); // True center of HUD area
       let y = 40;  // Increased from 20 to 40 for more top padding
       
       // Title Section - centered
       ctx.fillStyle = "#80ecba";
       ctx.font = "bold 18px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("JUST FITS", hudX + hudWidth / 2, y);
+      ctx.fillText("JUST FITS", hudCenterX, y);
       
       // Next Piece Section - bubbly card
       y += 40;
       ctx.fillStyle = "rgba(15, 71, 245, 0.1)";
       ctx.beginPath();
-      ctx.roundRect(hudX - 10, y - 5, hudWidth, 95, 12);
+      ctx.roundRect(hudX, y - 5, hudWidth, 95, 12);
       ctx.fill();
       ctx.strokeStyle = "rgba(15, 71, 245, 0.3)";
       ctx.lineWidth = 2;
@@ -1149,10 +1151,10 @@ For development history, see agent.md
       ctx.fillStyle = "#0f47f5";
       ctx.font = "12px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("NEXT", hudX + hudWidth / 2, y + 10);
+      ctx.fillText("NEXT", hudCenterX, y + 10);
       
       if (nextPiece) {
-        const previewX = hudX + hudWidth / 2 - 20;
+        const previewX = hudCenterX - 20; // Center the preview
         const previewY = y + 25;
         const shape = nextPiece.shape;
         const palette = TETRIS_COLORS[nextPiece.type];
@@ -1173,7 +1175,7 @@ For development history, see agent.md
       y += 110;
       ctx.fillStyle = "rgba(15, 71, 245, 0.1)";
       ctx.beginPath();
-      ctx.roundRect(hudX - 10, y - 5, hudWidth, 90, 12);
+      ctx.roundRect(hudX, y - 5, hudWidth, 90, 12);
       ctx.fill();
       ctx.strokeStyle = "rgba(15, 71, 245, 0.3)";
       ctx.lineWidth = 2;
@@ -1182,22 +1184,22 @@ For development history, see agent.md
       ctx.fillStyle = "#0f47f5";
       ctx.font = "12px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("STATS", hudX + hudWidth / 2, y + 10);
+      ctx.fillText("STATS", hudCenterX, y + 10);
       
       ctx.fillStyle = "#FFF";
       ctx.font = "14px sans-serif";
       y += 30;
-      ctx.fillText(`Lines: ${linesCleared}`, hudX + hudWidth / 2, y);
+      ctx.fillText(`Lines: ${linesCleared}`, hudCenterX, y);
       y += 20;
-      ctx.fillText(`Score: ${score}`, hudX + hudWidth / 2, y);
+      ctx.fillText(`Score: ${score}`, hudCenterX, y);
       y += 20;
-      ctx.fillText(`Level: ${level}`, hudX + hudWidth / 2, y);
+      ctx.fillText(`Level: ${level}`, hudCenterX, y);
       
       // Section Info - bubbly card
       y += 35;
       ctx.fillStyle = "rgba(15, 71, 245, 0.1)";
       ctx.beginPath();
-      ctx.roundRect(hudX - 10, y - 5, hudWidth, 65, 12);
+      ctx.roundRect(hudX, y - 5, hudWidth, 65, 12);
       ctx.fill();
       ctx.strokeStyle = "rgba(15, 71, 245, 0.3)";
       ctx.lineWidth = 2;
@@ -1206,23 +1208,23 @@ For development history, see agent.md
       ctx.fillStyle = "#0f47f5";
       ctx.font = "12px sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("SECTION", hudX + hudWidth / 2, y + 10);
+      ctx.fillText("SECTION", hudCenterX, y + 10);
       
       ctx.fillStyle = "#FFF";
       ctx.font = "bold 13px sans-serif";
       y += 30;
       if (currentSection === 0) {
-        ctx.fillText("PROPELLAND'S", hudX + hudWidth / 2, y);
+        ctx.fillText("PROPELLAND'S", hudCenterX, y);
         y += 15;
-        ctx.fillText("PRINCIPLES", hudX + hudWidth / 2, y);
+        ctx.fillText("PRINCIPLES", hudCenterX, y);
       } else if (currentSection === 1) {
-        ctx.fillText("MY PERSONALITY", hudX + hudWidth / 2, y);
+        ctx.fillText("MY PERSONALITY", hudCenterX, y);
       } else if (currentSection === 2) {
-        ctx.fillText("MY SKILLS", hudX + hudWidth / 2, y);
+        ctx.fillText("MY SKILLS", hudCenterX, y);
       } else if (currentSection === 3) {
-        ctx.fillText("MY WORK ETHIC", hudX + hudWidth / 2, y);
+        ctx.fillText("MY WORK ETHIC", hudCenterX, y);
       } else if (currentSection === 4) {
-        ctx.fillText("I AM A...", hudX + hudWidth / 2, y);
+        ctx.fillText("I AM A...", hudCenterX, y);
       }
     }
     
@@ -1439,6 +1441,10 @@ For development history, see agent.md
       
       document.getElementById("overlay").classList.remove("active");
       resetGame(); // This already sets gameState = "playing"
+      lastTime = performance.now(); // Reset time to current time
+      dropCounter = 0; // Reset drop counter
+      lastTime = 0; // Reset time so deltaTime calculation works correctly
+      dropCounter = 0; // Reset drop counter to start immediately
       
       // Request wake lock to prevent screen from sleeping
       requestWakeLock();
