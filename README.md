@@ -53,16 +53,16 @@ This implementation follows the official **Tetris Guideline** (standardized by T
 - **Total pieces:** 41 (across 5 sections: 0-4)
 - **Lines cleared:** 10 throughout gameplay
 - **Final cascade:** LEARNER piece clears 1 line to finish
-- **Total lines of code:** 1,348 (single HTML file)
+- **Total lines of code:** 1,737 (single HTML file)
 - **Dependencies:** Zero — pure vanilla JavaScript
 - **File size:** ~60KB uncompressed
 
 ## Technical Highlights
 - **Single HTML file** — no dependencies, no CDN, works on file:// and HTTPS
-- **Deterministic autoplay** — pre-validated script ensures perfect execution every time
+- **Deterministic autoplay** — pre-validated 41-piece script ensures perfect execution every time
 - **Web Audio API** — Procedurally generated Korobeiniki (Tetris theme) chiptune melody
 - **Smart text rendering** — labels centered on entire piece shape, not per-cell
-- **Validation system** — 279-line Node.js script pre-validates all 41 pieces before commit
+- **Custom color palette** — vibrant, distinct colors for optimal visual clarity
 - **Section messaging** — Narrative guides viewer through 5-section structure
 - **Responsive canvas** — Retina-ready with proper pixel scaling, adapts to mobile/tablet/desktop
 - **Touch controls** — Full touch support for mobile devices with visual feedback
