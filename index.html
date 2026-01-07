@@ -1624,12 +1624,6 @@ For development history, see agent.md
           return;
         }
         
-        // Safety check: if a timeout already exists, don't create another loop
-        if (musicLoopTimeout !== null) {
-          console.log('Loop timeout already scheduled, skipping duplicate');
-          return;
-        }
-        
         // Update time to current context time for this loop iteration
         time = audioContext.currentTime;
         
