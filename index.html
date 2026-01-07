@@ -572,6 +572,7 @@ For development history, see agent.md
     let musicStarted = false;
     let activeOscillators = [];
     let musicLoopTimeout = null;
+    let pauseTime = 0; // Track when we paused
     let rotationTimer = 0;
     let rotationInterval = 800; // Rotate every 800ms
     let principleMessageIndex = 0;
@@ -1618,8 +1619,14 @@ For development history, see agent.md
         // If context is suspended, don't create new oscillators yet
         // The loop will resume when context is resumed
         if (audioContext.state === 'suspended') {
-          console.log('AudioContext suspended, pausing loop');
+          console.log('AudioContext suspended, waiting for resume');
           musicLoopTimeout = null;
+          return;
+        }
+        
+        // Safety check: if a timeout already exists, don't create another loop
+        if (musicLoopTimeout !== null) {
+          console.log('Loop timeout already scheduled, skipping duplicate');
           return;
         }
         
@@ -1663,9 +1670,19 @@ For development history, see agent.md
     function pauseAudio() {
       if (audioContext && audioContext.state === "running") {
         console.log('Pausing audio - suspending AudioContext');
+        pauseTime = Date.now();
         audioContext.suspend();
-        // Don't clear musicLoopTimeout or stop oscillators - AudioContext suspend will pause all scheduled audio
-        // The playLoop function checks for suspended state and won't create new oscillators
+        // Clear the timeout - this is essential to prevent multiple overlapping loops
+        if (musicLoopTimeout) {
+          clearTimeout(musicLoopTimeout);
+          musicLoopTimeout = null;
+        }
+        // Stop all active oscillators to prevent them from resuming
+        activeOscillators.forEach(osc => {
+          try { osc.stop(); } catch (e) {}
+        });
+        activeOscillators = [];
+        console.log('Stopped all audio and cleared timeout');
       }
     }
     
@@ -1673,9 +1690,9 @@ For development history, see agent.md
       if (audioContext && audioContext.state === "suspended") {
         console.log('Resuming audio - resuming AudioContext');
         audioContext.resume().then(() => {
-          // If music was started but loop was stopped (timeout fired while paused), restart it
-          if (musicStarted && !musicLoopTimeout) {
-            console.log('Music loop ended during pause, restarting');
+          // Clean restart of music if it was started
+          if (musicStarted) {
+            console.log('Restarting music cleanly after resume');
             startMusic();
           }
         });
