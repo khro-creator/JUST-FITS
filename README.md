@@ -24,7 +24,7 @@ As pieces drop, lines clear when complete rows form, demonstrating continuous pr
 ## Tetris Guideline Compliance
 This implementation follows the official **Tetris Guideline** (standardized by The Tetris Company since 2001):
 
-✅ **Standard Colors**: I=Cyan, O=Yellow, T=Magenta, S=Green, Z=Red, J=Blue, L=Orange  
+✅ **Custom Color Palette**: I=Cyan (#00A8F2), O=Yellow (#FFDA00), T=Magenta (#FC38D2), S=Green (#6DD30B), Z=Red (#EF0028), J=Blue (#00397D), L=Orange (#FF6D00)  
 ✅ **Playfield**: 10 columns × 20 visible rows (with 2-row buffer zone)  
 ✅ **SRS Rotation**: Super Rotation System with proper tetromino shapes  
 ✅ **Lock Delay**: 0.5-second delay before pieces lock (Guideline standard)  

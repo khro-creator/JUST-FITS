@@ -83,8 +83,8 @@ const SHAPES = {
 }
 ```
 - **Matrix Format:** Each rotation is a 4×4 binary matrix (1=filled, 0=empty)
-- **Standard Colors:** I=cyan, O=yellow, T=magenta, S=green, Z=red, J=blue, L=orange
-- **Guideline Compliance:** Follows official Tetris rotation system
+- **Custom Color Palette:** I=Cyan (#00A8F2), O=Yellow (#FFDA00), T=Magenta (#FC38D2), S=Green (#6DD30B), Z=Red (#EF0028), J=Blue (#00397D), L=Orange (#FF6D00)
+- **Guideline Compliance:** Follows official Tetris rotation system with custom vibrant colors
 
 #### 3. Deterministic Script Engine (lines 352-356)
 ```javascript
