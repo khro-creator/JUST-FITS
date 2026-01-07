@@ -39,7 +39,8 @@ This implementation follows the official **Tetris Guideline** (standardized by T
 
 **Desktop Controls:**
 - Press **Start** (or **Space**) to begin (music starts after the first gesture due to browser rules)
-- **R** = Retry, **Space** = Pause/Resume
+- **Space** = Pause/Resume
+- **Retry** via scoreboard button only (R key disabled to prevent bugs)
 
 **Mobile/Tablet Controls:**
 - **Tap anywhere** to start the game
